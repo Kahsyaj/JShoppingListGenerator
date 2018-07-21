@@ -38,7 +38,7 @@ public class Recipe extends Entity {
 
     //Setters
     public void setIngredients(ArrayList<Ingredient> ingredients) {
-        if (quantities.size() == this.ingredients.size()) {
+        if (quantities.size() == this.size()) {
             this.ingredients = ingredients;
         } else {
             throw new UnsupportedOperationException("The ingredients size don't match to quantities size.");
@@ -46,7 +46,7 @@ public class Recipe extends Entity {
     }
 
     public void setQuantities(ArrayList<Integer> quantities) {
-        if (quantities.size() == this.ingredients.size()) {
+        if (quantities.size() == this.size()) {
             this.quantities = quantities;
         } else {
             throw new UnsupportedOperationException("The quantities size don't match to ingredients size.");
@@ -54,13 +54,26 @@ public class Recipe extends Entity {
     }
 
     //Other methods
+    public boolean inRecipe(Ingredient ing) {
+        for (int i = 0; i < this.size(); i++) {
+            if (this.getIngredients().get(i).getName().equals(ing.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addIngredient(Ingredient ing, Integer qty) {
-        this.ingredients.add(ing);
-        this.quantities.add(qty);
+        if (this.inRecipe(ing)) {
+            this.setIngredientQuantity(ing.getName(), qty);
+        } else {
+            this.ingredients.add(ing);
+            this.quantities.add(qty);
+        }
     }
 
     public void setIngredientName(String name, String newName) {
-        for (int i = 0; i < this.ingredients.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             if (this.ingredients.get(i).getName().equals(name)) {
                 this.ingredients.set(i, new Ingredient(name));
             }
@@ -68,11 +81,15 @@ public class Recipe extends Entity {
     }
 
     public void setIngredientQuantity(String name, Integer newQuantity) {
-        for (int i = 0; i < this.ingredients.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             if (this.ingredients.get(i).getName().equals(name)) {
                 this.quantities.set(i, newQuantity);
             }
         }
+    }
+
+    public int size() {
+        return this.getIngredients().size();
     }
 
     @Override
@@ -87,15 +104,12 @@ public class Recipe extends Entity {
 
     public void init(ResultSet rslt) {
         try {
-            rslt.next();
             this.setId(rslt.getInt(DB_FIELDS[0]));
             this.setDeleted(rslt.getInt(DB_FIELDS[3]));
             do {
                 this.ingredients.add(new Ingredient(rslt));
                 this.quantities.add(rslt.getInt(DB_FIELDS[2]));
             } while (rslt.next());
-
-            rslt.beforeFirst();
         } catch (SQLException e) {
             System.err.println("An error occurred with the meal init.\n" + e.getMessage());
         }

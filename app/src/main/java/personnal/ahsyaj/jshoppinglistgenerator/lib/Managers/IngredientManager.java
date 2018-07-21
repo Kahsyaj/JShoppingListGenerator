@@ -70,23 +70,36 @@ public class IngredientManager extends Manager {
         }
     }
 
-    /*
+
     public Ingredient dbLoad(int id) {
         try {
             String query = (String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]));
             PreparedStatement st = this.getConnector().prepareStatement(query);
+            st.setInt(1, id);
+            ResultSet rslt = st.executeQuery();
+            rslt.next();
+            return new Ingredient(rslt);
 
         } catch (SQLException e) {
             System.err.println("An error occurred with the ingredient loading.");
-
+            return null;
         }
     }
 
     public Ingredient dbLoad(String name) {
         try {
+            String query = (String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), EDIT_FIELDS[0], UNEDIT_FIELDS[1]));
+            PreparedStatement st = this.getConnector().prepareStatement(query);
+            st.setString(1, name);
+            ResultSet rslt = st.executeQuery();
+            rslt.next();
+            return new Ingredient(rslt);
 
+        } catch (SQLException e) {
+            System.err.println("An error occurred with the ingredient loading.");
+            return null;
         }
-    }*/
+    }
 
     public boolean restoreSoftDeleted() {
         try {

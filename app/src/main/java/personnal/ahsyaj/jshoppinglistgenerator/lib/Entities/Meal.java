@@ -3,6 +3,8 @@ package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.RecipeManager;
+
 public class Meal extends Entity {
     public static String[] DB_FIELDS = {"id_meal", "name_meal", "deleted"};
     private String name;
@@ -60,12 +62,11 @@ public class Meal extends Entity {
 
     public void init(ResultSet rslt) {
         try {
-            while (rslt.next()) {
-                this.setId(rslt.getInt(DB_FIELDS[0]));
-                this.setName(rslt.getNString(DB_FIELDS[1]));
-                this.setDeleted(rslt.getInt(DB_FIELDS[2]));
-            }
-            rslt.beforeFirst();
+            this.setId(rslt.getInt(DB_FIELDS[0]));
+            this.setName(rslt.getNString(DB_FIELDS[1]));
+            this.setDeleted(rslt.getInt(DB_FIELDS[2]));
+            RecipeManager rcp_mgr = new RecipeManager();
+            this.setRecipe(rcp_mgr.dbLoad(this.getId()));
         } catch (SQLException e) {
             System.err.println("An error occurred with the meal init.\n" + e.getMessage());
         }

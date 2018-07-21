@@ -48,11 +48,9 @@ public class Ingredient extends Entity {
 
     public void init(ResultSet rslt) {
         try {
-                rslt.next();
                 this.setId(rslt.getInt(DB_FIELDS[0]));
                 this.setName(rslt.getNString(DB_FIELDS[1]));
                 this.setDeleted(rslt.getInt(DB_FIELDS[2]));
-            rslt.previous();
         } catch (SQLException e) {
             System.err.println("An error occurred with the ingredient init.\n" + e.getMessage());
         }
