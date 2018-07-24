@@ -11,18 +11,25 @@ public class DbFactory {
     private String url;
 
     //Constructors
-    public DbFactory() {
+    /*public DbFactory() {
         this.userName = "root";
         this.password = "root";
         this.database = "ShoppingListGenerator";
         this.url = "jdbc:mysql://localhost:8889/" + this.database + "?serverTimezone=UTC";
+    }*/
+
+    public DbFactory() {
+        this.userName = "toor";
+        this.password = "toor";
+        this.database = "ShoppingListGenerator";
+        this.url = "jdbc:mysql://localhost:3306/" + this.database + "?serverTimezone=UTC";
     }
 
     public DbFactory(String uName, String psswd, String db, String host, String port) {
         this.userName = uName;
         this.password = psswd;
         this.database = db;
-        this.url = "jdbc:mysql://" + host + ":" + port + "/" + db;
+        this.url = "jdbc:mysql://" + host + ":" + port + "/" + this.database + "?serverTimezone=UTC";
     }
 
     //Getters

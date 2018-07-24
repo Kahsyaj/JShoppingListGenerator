@@ -17,6 +17,11 @@ public class IngredientManager extends Manager {
         this.setTable("Ingredient");
     }
 
+    public IngredientManager(DbFactory dbF) {
+        super(dbF);
+        this.setTable("Ingredient");
+    }
+
     //Other methods
     public boolean dbCreate(Ingredient ingredient) {
         try {
@@ -70,7 +75,6 @@ public class IngredientManager extends Manager {
         }
     }
 
-
     public Ingredient dbLoad(int id) {
         try {
             String query = (String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]));
@@ -81,7 +85,7 @@ public class IngredientManager extends Manager {
             return new Ingredient(rslt);
 
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient loading.");
+            System.err.println("An error occurred with the ingredient loading.\n" + e.getMessage());
             return null;
         }
     }
@@ -126,13 +130,13 @@ public class IngredientManager extends Manager {
 
     public int getCurrentId() {
         try {
-            String query = String.format("SELECT MAX(%s) FROM %s", UNEDIT_FIELDS[0], this.getTable());
+            String query = String.format("SELECT MAX(%s) as %s FROM %s", UNEDIT_FIELDS[0], UNEDIT_FIELDS[0], this.getTable());
             Statement st = this.getConnector().createStatement();
             ResultSet rslt = st.executeQuery(query);
             if (!rslt.next()) {
                 return 1;
             }
-            int currentId = rslt.getInt(String.format("%s", UNEDIT_FIELDS[0])) + 1;
+            int currentId = rslt.getInt(UNEDIT_FIELDS[0]) + 1;
             rslt.close();
             return currentId;
         } catch (SQLException e) {

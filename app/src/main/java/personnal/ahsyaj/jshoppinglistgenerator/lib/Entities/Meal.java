@@ -22,6 +22,11 @@ public class Meal extends Entity {
         this.init(rslt);
     }
 
+    public Meal(String name) {
+        super();
+        this.name = name;
+    }
+
     public Meal(int id, String name) {
         super(id);
         this.name = name;
@@ -55,7 +60,7 @@ public class Meal extends Entity {
     //Other methods
     @Override
     public String toString() {
-        String repr = String.format("[Meal]\n[id_meal] : %s - [name_meal] : %s\n", String.valueOf(this.getId()), this.getName());
+        String repr = String.format("[Meal]\n[%s] : %s - [%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId()), DB_FIELDS[1], this.getName());
         repr += this.recipe.toString();
         return repr;
     }
@@ -67,6 +72,7 @@ public class Meal extends Entity {
             this.setDeleted(rslt.getInt(DB_FIELDS[2]));
             RecipeManager rcp_mgr = new RecipeManager();
             this.setRecipe(rcp_mgr.dbLoad(this.getId()));
+            rslt.close();
         } catch (SQLException e) {
             System.err.println("An error occurred with the meal init.\n" + e.getMessage());
         }

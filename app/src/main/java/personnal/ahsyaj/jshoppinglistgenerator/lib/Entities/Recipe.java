@@ -4,16 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
+
 public class Recipe extends Entity {
     public static String[] DB_FIELDS = {"id_meal", "id_ingredient", "quantity", "deleted"};
-    private ArrayList<Ingredient> ingredients;
-    private ArrayList<Integer> quantities;
+    private ArrayList<Ingredient> ingredients = new ArrayList<>();
+    private ArrayList<Integer> quantities = new ArrayList<>();
 
     //Constructors
     public Recipe() {
         super();
-        this.ingredients = new ArrayList<>();
-        this.quantities = new ArrayList<>();
     }
 
     public Recipe(ResultSet rslt) {
@@ -94,7 +94,7 @@ public class Recipe extends Entity {
 
     @Override
     public String toString() {
-        String repr = "[Recipe]\n";
+        String repr = String.format("[Recipe]\n[%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId()));
         for (int i = 0; i < this.getIngredients().size(); i++) {
             repr += this.getIngredients().get(i).toString() + " - ";
             repr += String.format("[quantity] : %s\n", this.getQuantities().get(i).toString());
@@ -104,14 +104,16 @@ public class Recipe extends Entity {
 
     public void init(ResultSet rslt) {
         try {
+            IngredientManager ing_mgr = new IngredientManager();
             this.setId(rslt.getInt(DB_FIELDS[0]));
             this.setDeleted(rslt.getInt(DB_FIELDS[3]));
             do {
-                this.ingredients.add(new Ingredient(rslt));
+                this.ingredients.add(ing_mgr.dbLoad(rslt.getInt(DB_FIELDS[1])));
                 this.quantities.add(rslt.getInt(DB_FIELDS[2]));
             } while (rslt.next());
+            rslt.close();
         } catch (SQLException e) {
-            System.err.println("An error occurred with the meal init.\n" + e.getMessage());
+            System.err.println("An error occurred with the recipe init.\n" + e.getMessage());
         }
     }
 }

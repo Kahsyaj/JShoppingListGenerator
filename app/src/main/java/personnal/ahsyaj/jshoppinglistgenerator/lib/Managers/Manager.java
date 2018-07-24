@@ -54,6 +54,12 @@ public abstract class Manager {
             st.executeUpdate("CREATE TABLE IF NOT EXISTS ShoppingList (id_shoppinglist INT NOT NULL " +
                     "AUTO_INCREMENT, date_shoppinglist DATE, deleted INT(1) DEFAULT 0, CONSTRAINT " +
                     "ShoppingList_PK PRIMARY KEY (id_shoppinglist)) ENGINE=InnoDB");
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS Purchase ( id_shoppinglist INT NOT NULL, " +
+                    "id_meal Int NOT NULL, deleted INT(1) DEFAULT 0, " +
+                    "CONSTRAINT Purchase_PK PRIMARY KEY (id_shoppinglist, id_meal), CONSTRAINT " +
+                    "Purchase_Meal_FK FOREIGN KEY (id_meal) REFERENCES Meal(id_meal), " +
+                    "CONSTRAINT Purchase_ShoppingList_FK FOREIGN KEY (id_shoppinglist) REFERENCES " +
+                    "ShoppingList(id_shoppinglist)) ENGINE=InnoDB");
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }

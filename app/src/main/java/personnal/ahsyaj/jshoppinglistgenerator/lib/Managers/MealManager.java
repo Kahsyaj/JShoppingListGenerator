@@ -18,6 +18,11 @@ public class MealManager extends Manager {
         this.setTable("Meal");
     }
 
+    public MealManager(DbFactory dbF) {
+        super(dbF);
+        this.setTable("Meal");
+    }
+
     //Other methods
     public boolean dbCreate(Meal meal) {
         try {
@@ -81,7 +86,7 @@ public class MealManager extends Manager {
             return new Meal(rslt);
 
         } catch (SQLException e) {
-            System.err.println("An error occurred with the meal loading.");
+            System.err.println("An error occurred with the meal loading.\n" + e.getMessage());
             return null;
         }
     }
@@ -126,7 +131,7 @@ public class MealManager extends Manager {
 
     public int getCurrentId() {
         try {
-            String query = String.format("SELECT MAX(%s) FROM %s", UNEDIT_FIELDS[0], this.getTable());
+            String query = String.format("SELECT MAX(%s) as %s FROM %s", UNEDIT_FIELDS[0], UNEDIT_FIELDS[0], this.getTable());
             Statement st = this.getConnector().createStatement();
             ResultSet rslt = st.executeQuery(query);
             if (!rslt.next()) {

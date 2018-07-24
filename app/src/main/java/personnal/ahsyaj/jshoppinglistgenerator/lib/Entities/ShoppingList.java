@@ -1,7 +1,7 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
 public class ShoppingList extends Entity {
-    public static String[] DB_FIELDS = {"id_meal", "name_meal", "deleted"};
+    public static String[] DB_FIELDS = {"id_shoppinglist", "date_shoppinglist", "deleted"};
     private String date;
     private Purchase purchase;
 

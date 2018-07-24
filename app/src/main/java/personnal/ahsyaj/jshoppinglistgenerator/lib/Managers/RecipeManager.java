@@ -9,12 +9,17 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Recipe;
 
 
 public class RecipeManager extends Manager {
-    public final static String[] EDIT_FIELDS = {"id_ingredient, quantity"};
-    public final static String[] UNEDIT_FIELDS = {"id_recipe", "deleted"};
+    public final static String[] EDIT_FIELDS = {"id_ingredient", "quantity"};
+    public final static String[] UNEDIT_FIELDS = {"id_meal", "deleted"};
 
     //Constructors
     public RecipeManager() {
         super();
+        this.setTable("Recipe");
+    }
+
+    public RecipeManager(DbFactory dbF) {
+        super(dbF);
         this.setTable("Recipe");
     }
 
@@ -74,9 +79,8 @@ public class RecipeManager extends Manager {
             ResultSet rslt = st.executeQuery();
             rslt.next();
             return new Recipe(rslt);
-
         } catch (SQLException e) {
-            System.err.println("An error occurred with the recipe loading.");
+            System.err.println("An error occurred with the recipe loading.\n" + e.getMessage());
             return null;
         }
     }
