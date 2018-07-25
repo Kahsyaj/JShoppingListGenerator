@@ -4,12 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 
 public class IngredientManager extends Manager {
-    public final static String[] EDIT_FIELDS = {"name_ingredient"};
-    public final static String[] UNEDIT_FIELDS = {"id_ingredient", "deleted"};
+    public static String[] EDIT_FIELDS = {"name_ingredient"};
+    public static String[] UNEDIT_FIELDS = {"id_ingredient", "deleted"};
 
     //Constructors
     public IngredientManager() {
@@ -33,7 +34,7 @@ public class IngredientManager extends Manager {
             ingredient.setId(currentId);
             return true;
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient creating.\n" + e.getMessage());
+            System.err.println(String.format("An error occurred with the %s creating.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
@@ -46,7 +47,7 @@ public class IngredientManager extends Manager {
             st.setInt(2, ingredient.getId());
             return st.executeUpdate() != 0;
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient's update.\n" + e.getMessage());
+            System.err.println(String.format("An error occurred with the %s updating.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
@@ -58,7 +59,7 @@ public class IngredientManager extends Manager {
             st.setInt(1, ingredient.getId());
             return st.executeUpdate() != 0;
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient's soft delete.\n" + e.getMessage());
+            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
@@ -70,63 +71,83 @@ public class IngredientManager extends Manager {
             st.setInt(1, ingredient.getId());
             return st.executeUpdate() != 0;
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient's update.\n" + e.getMessage());
+            System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean dbSoftDelete(int id) {
+        try {
+            String query = String.format("UPDATE %s SET %s = 1 WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[1], UNEDIT_FIELDS[0]);
+            PreparedStatement st = this.getConnector().prepareStatement(query);
+            st.setInt(1, id);
+            return st.executeUpdate() != 0;
+        } catch (SQLException e) {
+            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean dbHardDelete(int id) {
+        try {
+            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
+            PreparedStatement st = this.getConnector().prepareStatement(query);
+            st.setInt(1, id);
+            return st.executeUpdate() != 0;
+        } catch (SQLException e) {
+            System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
 
     public Ingredient dbLoad(int id) {
         try {
-            String query = (String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]));
+            String query = String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]);
             PreparedStatement st = this.getConnector().prepareStatement(query);
             st.setInt(1, id);
             ResultSet rslt = st.executeQuery();
             rslt.next();
-            return new Ingredient(rslt);
+            return new Ingredient(rslt, true);
 
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient loading.\n" + e.getMessage());
+            System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
             return null;
         }
     }
 
     public Ingredient dbLoad(String name) {
         try {
-            String query = (String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), EDIT_FIELDS[0], UNEDIT_FIELDS[1]));
+            String query = String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), EDIT_FIELDS[0], UNEDIT_FIELDS[1]);
             PreparedStatement st = this.getConnector().prepareStatement(query);
             st.setString(1, name);
             ResultSet rslt = st.executeQuery();
             rslt.next();
-            return new Ingredient(rslt);
+            return new Ingredient(rslt, true);
 
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient loading.");
+            System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
             return null;
         }
     }
 
-    public boolean restoreSoftDeleted() {
+    public ArrayList<Ingredient> dbLoadAll() {
         try {
-            String query = String.format("UPDATE %s SET %s = 1 WHERE %s = 1", this.getTable(), UNEDIT_FIELDS[1], UNEDIT_FIELDS[1]);
+            ArrayList<Ingredient> ingLst = new ArrayList<>();
+            String query = String.format("SELECT * FROM %s WHERE %s = 0", this.getTable(), UNEDIT_FIELDS[1]);
             Statement st = this.getConnector().createStatement();
-            return st.executeUpdate(query) != 0;
+            ResultSet rslt = st.executeQuery(query);
+            while (rslt.next()) {
+                ingLst.add(new Ingredient(rslt, false));
+            }
+            rslt.close();
+            return ingLst;
         } catch (SQLException e) {
-            System.err.println("An error occurred with the soft deleted ingredients restoring.\n" + e.getMessage());
-            return false;
+            System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
+            return null;
         }
     }
 
-    public boolean restoreSoftDeleted(int id) {
-        try {
-            String query = String.format("UPDATE %s SET %s = 1 WHERE %s = 1 AND %s = ?", this.getTable(), UNEDIT_FIELDS[1], UNEDIT_FIELDS[1], UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, id);
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
-            System.err.println("An error occurred with the soft deleted ingredient restoring.\n" + e.getMessage());
-            return false;
-        }
-    }
+
 
     public int getCurrentId() {
         try {
@@ -140,7 +161,7 @@ public class IngredientManager extends Manager {
             rslt.close();
             return currentId;
         } catch (SQLException e) {
-            System.err.println("An error occurred with the ingredient id query.\n" + e.getMessage());
+            System.err.println(String.format("An error occurred with the %s id querying.\n", this.getTable()) + e.getMessage());
             return 0;
         }
     }

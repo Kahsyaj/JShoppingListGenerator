@@ -16,9 +16,9 @@ public class Recipe extends Entity {
         super();
     }
 
-    public Recipe(ResultSet rslt) {
+    public Recipe(ResultSet rslt, boolean close) {
         super();
-        this.init(rslt);
+        this.init(rslt, close);
     }
 
     public Recipe(int id, ArrayList<Ingredient> ingredients, ArrayList<Integer> quantities) {
@@ -54,9 +54,17 @@ public class Recipe extends Entity {
     }
 
     //Other methods
+    public Ingredient getIngredient(int index) {
+        return this.ingredients.get(index);
+    }
+
+    public Integer getQuantity(int index) {
+        return this.quantities.get(index);
+    }
+
     public boolean inRecipe(Ingredient ing) {
         for (int i = 0; i < this.size(); i++) {
-            if (this.getIngredients().get(i).getName().equals(ing.getName())) {
+            if (this.getIngredient(i).getName().equals(ing.getName())) {
                 return true;
             }
         }
@@ -74,7 +82,7 @@ public class Recipe extends Entity {
 
     public void setIngredientName(String name, String newName) {
         for (int i = 0; i < this.size(); i++) {
-            if (this.ingredients.get(i).getName().equals(name)) {
+            if (this.getIngredient(i).getName().equals(name)) {
                 this.ingredients.set(i, new Ingredient(name));
             }
         }
@@ -82,7 +90,7 @@ public class Recipe extends Entity {
 
     public void setIngredientQuantity(String name, Integer newQuantity) {
         for (int i = 0; i < this.size(); i++) {
-            if (this.ingredients.get(i).getName().equals(name)) {
+            if (this.getIngredient(i).getName().equals(name)) {
                 this.quantities.set(i, newQuantity);
             }
         }
@@ -95,14 +103,14 @@ public class Recipe extends Entity {
     @Override
     public String toString() {
         String repr = String.format("[Recipe]\n[%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId()));
-        for (int i = 0; i < this.getIngredients().size(); i++) {
-            repr += this.getIngredients().get(i).toString() + " - ";
+        for (int i = 0; i < this.size(); i++) {
+            repr += this.getIngredient(i).toString() + " - ";
             repr += String.format("[quantity] : %s\n", this.getQuantities().get(i).toString());
         }
         return repr;
     }
 
-    public void init(ResultSet rslt) {
+    public void init(ResultSet rslt, boolean close) {
         try {
             IngredientManager ing_mgr = new IngredientManager();
             this.setId(rslt.getInt(DB_FIELDS[0]));
@@ -111,7 +119,9 @@ public class Recipe extends Entity {
                 this.ingredients.add(ing_mgr.dbLoad(rslt.getInt(DB_FIELDS[1])));
                 this.quantities.add(rslt.getInt(DB_FIELDS[2]));
             } while (rslt.next());
-            rslt.close();
+            if (close) {
+                rslt.close();
+            }
         } catch (SQLException e) {
             System.err.println("An error occurred with the recipe init.\n" + e.getMessage());
         }

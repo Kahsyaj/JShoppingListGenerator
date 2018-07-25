@@ -13,9 +13,9 @@ public class Ingredient extends Entity {
         this.name = "";
     }
 
-    public Ingredient(ResultSet rslt) {
+    public Ingredient(ResultSet rslt, boolean close) {
         super();
-        this.init(rslt);
+        this.init(rslt, close);
     }
 
     public Ingredient(String name) {
@@ -46,12 +46,14 @@ public class Ingredient extends Entity {
                 String.valueOf(this.getId()), this.getName());
     }
 
-    public void init(ResultSet rslt) {
+    public void init(ResultSet rslt, boolean close) {
         try {
-                this.setId(rslt.getInt(DB_FIELDS[0]));
-                this.setName(rslt.getNString(DB_FIELDS[1]));
-                this.setDeleted(rslt.getInt(DB_FIELDS[2]));
+            this.setId(rslt.getInt(DB_FIELDS[0]));
+            this.setName(rslt.getNString(DB_FIELDS[1]));
+            this.setDeleted(rslt.getInt(DB_FIELDS[2]));
+            if (close) {
                 rslt.close();
+            }
         } catch (SQLException e) {
             System.err.println("An error occurred with the ingredient init.\n" + e.getMessage());
         }

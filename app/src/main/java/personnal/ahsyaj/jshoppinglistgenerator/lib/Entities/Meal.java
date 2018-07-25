@@ -17,9 +17,9 @@ public class Meal extends Entity {
         this.recipe = new Recipe();
     }
 
-    public Meal(ResultSet rslt) {
+    public Meal(ResultSet rslt, boolean close) {
         super();
-        this.init(rslt);
+        this.init(rslt, close);
     }
 
     public Meal(String name) {
@@ -65,14 +65,16 @@ public class Meal extends Entity {
         return repr;
     }
 
-    public void init(ResultSet rslt) {
+    public void init(ResultSet rslt, boolean close) {
         try {
             this.setId(rslt.getInt(DB_FIELDS[0]));
             this.setName(rslt.getNString(DB_FIELDS[1]));
             this.setDeleted(rslt.getInt(DB_FIELDS[2]));
             RecipeManager rcp_mgr = new RecipeManager();
             this.setRecipe(rcp_mgr.dbLoad(this.getId()));
-            rslt.close();
+            if (close) {
+                rslt.close();
+            }
         } catch (SQLException e) {
             System.err.println("An error occurred with the meal init.\n" + e.getMessage());
         }

@@ -24,9 +24,9 @@ public class Purchase extends Entity {
         this.meals = meals;
     }
 
-    public Purchase(ResultSet rslt) {
+    public Purchase(ResultSet rslt, boolean close) {
         super();
-        this.init(rslt);
+        this.init(rslt, close);
     }
 
     //Getters
@@ -40,24 +40,38 @@ public class Purchase extends Entity {
     }
 
     //Other methods
+    public int size() {
+        return this.meals.size();
+    }
+
+    public void addMeal(Meal meal) {
+        this.meals.add(meal);
+    }
+
+    public Meal getMeal(int index) {
+        return this.meals.get(index);
+    }
+
     @Override
     public String toString() {
         String repr = String.format("[Purchase]\n[%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId()));
-        for (int i = 0; i < this.meals.size(); i++) {
-            repr += this.meals.get(i).toString();
+        for (int i = 0; i < this.size(); i++) {
+            repr += this.getMeal(i).toString();
         }
         return repr;
     }
 
-    public void init(ResultSet rslt) {
+    public void init(ResultSet rslt, boolean close) {
         try {
             MealManager meal_mgr = new MealManager();
             this.setId(rslt.getInt(DB_FIELDS[0]));
             this.setDeleted(rslt.getInt(DB_FIELDS[2]));
             do {
-                this.getMeals().add(meal_mgr.dbLoad(rslt.getInt(DB_FIELDS[1])));
+                this.addMeal(meal_mgr.dbLoad(rslt.getInt(DB_FIELDS[1])));
             } while (rslt.next());
-            rslt.close();
+            if (close) {
+                rslt.close();
+            }
         } catch (SQLException e) {
             System.err.println("An error occurred with the purchase init.\n" + e.getMessage());
         }
