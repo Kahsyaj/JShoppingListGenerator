@@ -1,7 +1,10 @@
 package personnal.ahsyaj.jshoppinglistgenerator;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
@@ -15,6 +18,7 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.PurchaseManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.RecipeManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListGenerator;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
 
 public class Launcher {
@@ -33,14 +37,16 @@ public class Launcher {
         * Recipe : init ; toString ;
         * ShoppingList : init ; toString ;
         *
-        * IngredientManager : dbLoad ; getCurrentId ; dbCreate ; softDelete ; restoreSoftDeleted ;
-        * MealManager : dbLoad ; getCurrentId ; dbCreate ; softDelete ; restoreSoftDeleted ;
-        * PurchaseManager : dbLoad ; dbCreate ; softDelete ; restoreSoftDeleted ;
-        * RecipeManager : dbLoad ; dbCreate ; softDelete ; restoreSoftDeleted ;
-        * ShoppingListManager : dbLoad ; getCurrentId ; dbCreate ; softDelete ; restoreSoftDeleted ;
+        * IngredientManager : dbLoad ; getCurrentId ; dbCreate ; softDelete ; restoreSoftDeleted ; getIds ; dbUpdate
+        * MealManager : dbLoad ; getCurrentId ; dbCreate ; softDelete ; restoreSoftDeleted ; getIds ; dbUpdate ; fullDbUpdate
+        * PurchaseManager : dbLoad ; dbCreate ; softDelete ; restoreSoftDeleted ; getIds ;
+        * RecipeManager : dbLoad ; dbCreate ; softDelete ; restoreSoftDeleted ; getIds ;
+        * ShoppingListManager : dbLoad ; getCurrentId ; dbCreate ; softDelete ; restoreSoftDeleted ; getIds ;
+        * ShoppingListGenerator : generate ;
         * */
         IngredientManager ing_mgr = new IngredientManager();
         Ingredient ing = ing_mgr.dbLoad(17);
+        ing.setName("bloublou");
         Ingredient ing2 = ing_mgr.dbLoad(149);
         Ingredient ing3 = new Ingredient("lololo vfvf");
         //ing_mgr.dbCreate(ing2);
@@ -62,6 +68,8 @@ public class Launcher {
         MealManager meal_mgr = new MealManager();
         Meal meal = meal_mgr.dbLoad(1);
         Meal meal2 = meal_mgr.dbLoad(2);
+        meal.getRecipe().addIngredient(ing2, 100000);
+        meal_mgr.fullDbUpdate(meal);
         //meal_mgr.dbCreate(meal2);
         //System.out.println(meal2.getId());
 
@@ -80,7 +88,12 @@ public class Launcher {
         s2.setPurchase(purchase);
         //s_mgr.dbCreate(s2);
         //System.out.println(s2.toString());
-        ing_mgr.restoreSoftDeleted();
-        System.out.println(s_mgr.getElementsNumber());
+        ArrayList<Integer> ids = purchase_mgr.getIds();
+        for (int i = 0; i < ids.size(); i++) {
+            //System.out.println(ids.get(i).toString());
+        }
+        ShoppingListGenerator s = new ShoppingListGenerator(2);
+        s1 = s.generate();
+        System.out.println(s1.toString());
     }
 }

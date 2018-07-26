@@ -2,8 +2,14 @@ package personnal.ahsyaj.jshoppinglistgenerator;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+    private Button ingredientsButton = null;
+    private Button mealsButton = null;
+    private Button shoppingListsButton = null;
+    private Button quitButton = null;
+    private Button setupButton = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -12,8 +12,8 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Purchase;
 
 public class PurchaseManager extends Manager {
-    public static String[] EDIT_FIELDS = {"id_meal"};
-    public static String[] UNEDIT_FIELDS = {"id_shoppinglist", "deleted"};
+    public static final String[] EDIT_FIELDS = {"id_meal"};
+    public static final String[] UNEDIT_FIELDS = {"id_shoppinglist", "deleted"};
 
     //Constructors
     public PurchaseManager() {
@@ -243,6 +243,29 @@ public class PurchaseManager extends Manager {
         } catch (SQLException e) {
             System.err.println(String.format("An error occurred with the soft deleted %s full restoring.\n", this.getTable()) + e.getMessage());
             return false;
+        }
+    }
+
+    public ArrayList<Integer> getIds() {
+        try {
+            ArrayList<Integer> idLst = new ArrayList<>();
+            String query = String.format("SELECT %s FROM %s WHERE %s = 0", UNEDIT_FIELDS[0], this.getTable(), UNEDIT_FIELDS[1]);
+            Statement st = this.getConnector().createStatement();
+            ResultSet rslt = st.executeQuery(query);
+            while (rslt.next()) {
+                Integer id = rslt.getInt(UNEDIT_FIELDS[0]);
+                if (!idLst.contains(id)) {
+                    idLst.add(id);
+                }
+            }
+            if (idLst.size() == 0) {
+                return null;
+            } else {
+                return idLst;
+            }
+        } catch (SQLException e) {
+            System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
+            return null;
         }
     }
 }

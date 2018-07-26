@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 
 public class MealManager extends Manager {
-    public static String[] EDIT_FIELDS = {"name_meal"};
-    public static String[] UNEDIT_FIELDS = {"id_meal", "deleted"};
+    public static final String[] EDIT_FIELDS = {"name_meal"};
+    public static final String[] UNEDIT_FIELDS = {"id_meal", "deleted"};
 
     //Constructors
     public MealManager() {
@@ -264,6 +264,26 @@ public class MealManager extends Manager {
         } catch (SQLException e) {
             System.err.println(String.format("An error occurred with the %s id querying.\n", this.getTable()) + e.getMessage());
             return 0;
+        }
+    }
+
+    public ArrayList<Integer> getIds() {
+        try {
+            ArrayList<Integer> idLst = new ArrayList<>();
+            String query = String.format("SELECT %s FROM %s WHERE %s = 0", UNEDIT_FIELDS[0], this.getTable(), UNEDIT_FIELDS[1]);
+            Statement st = this.getConnector().createStatement();
+            ResultSet rslt = st.executeQuery(query);
+            while (rslt.next()) {
+                idLst.add(rslt.getInt(UNEDIT_FIELDS[0]));
+            }
+            if (idLst.size() == 0) {
+                return null;
+            } else {
+                return idLst;
+            }
+        } catch (SQLException e) {
+            System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
+            return null;
         }
     }
 }
