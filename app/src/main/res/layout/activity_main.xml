@@ -7,6 +7,19 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ImageButton
+        android:id="@+id/quitButton"
+        android:layout_width="49dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
     <Button
         android:id="@+id/shoppinglistsbutton"
         android:layout_width="286dp"
@@ -15,7 +28,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/shoppinglists"
-        app:layout_constraintBottom_toTopOf="@+id/quitButton"
+        app:layout_constraintBottom_toTopOf="@+id/generateButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -32,13 +45,13 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/quitButton"
+        android:id="@+id/generateButton"
         android:layout_width="286dp"
         android:layout_height="65dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="76dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="@string/quit"
+        android:text="@string/generate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -46,7 +59,8 @@
     <TextView
         android:id="@+id/mainTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="71dp"
+        android:gravity="center"
         android:text="@string/shoppinglistgenerator"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -54,7 +68,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.102" />
+        app:layout_constraintVertical_bias="0.004" />
 
     <Button
         android:id="@+id/ingredientsButton"
@@ -71,27 +85,29 @@
     <TextView
         android:id="@+id/introText"
         android:layout_width="wrap_content"
-        android:layout_height="19dp"
+        android:layout_height="15dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
+        android:gravity="center"
         android:text="@string/which_category_would_you_like_to_browse"
         app:layout_constraintBottom_toTopOf="@+id/ingredientsButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainTitle"
-        app:layout_constraintVertical_bias="0.274" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
         android:id="@+id/setupButton"
         android:layout_width="49dp"
         android:layout_height="45dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_preferences" />
 
 </android.support.constraint.ConstraintLayout>
