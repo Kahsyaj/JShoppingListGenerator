@@ -9,8 +9,8 @@
 
     <ImageButton
         android:id="@+id/quitButton"
-        android:layout_width="49dp"
-        android:layout_height="45dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
@@ -101,8 +101,8 @@
 
     <ImageButton
         android:id="@+id/setupButton"
-        android:layout_width="49dp"
-        android:layout_height="45dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
