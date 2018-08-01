@@ -8,13 +8,23 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--Layouts-->
+    <style name="itemsList">
+        <item name="android:layout_width">344dp</item>
+        <item name="android:layout_height">365dp</item>
+        <item name="android:layout_marginBottom">72dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">64dp</item>
+    </style>
+
     <!--Buttons-->
     <style name="smallImageButton">
         <item name="android:layout_width">50dp</item>
         <item name="android:layout_height">50dp</item>
         <item name="android:layout_marginBottom">10dp</item>
         <item name="android:layout_marginEnd">10dp</item>
-        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginStart">10dp</item>
     </style>
 
     <style name="homeButton">
@@ -38,5 +48,45 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">71dp</item>
         <item name="android:gravity">center</item>
+    </style>
+
+    <style name="introText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">15dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="subTitle">
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_width">342sp</item>
+        <item name="android:layout_height">46dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+    </style>
+
+    <style name="formLabel">
+        <item name="android:layout_width">80sp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
+    <style name="formInput">
+        <item name="android:layout_width">0sp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:ems">10</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:maxLength">20</item>
     </style>
 </resources>
