@@ -28,4 +28,5 @@
     </string-array>
 
     <string name="category">CategoryName</string>
+    <string name="item_name">Item name</string>
 </resources>

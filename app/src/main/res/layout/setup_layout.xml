@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/addButton"
+        android:id="@+id/setupSaveButton"
         android:layout_width="156dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -26,17 +26,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/backButton" />
+        app:layout_constraintStart_toEndOf="@+id/setupBackButton" />
 
     <Button
-        android:id="@+id/backButton"
+        android:id="@+id/setupBackButton"
         android:layout_width="156dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/back"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addButton"
+        app:layout_constraintEnd_toStartOf="@+id/setupSaveButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 

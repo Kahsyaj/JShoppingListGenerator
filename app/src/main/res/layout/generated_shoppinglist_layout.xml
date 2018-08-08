@@ -35,10 +35,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/backButton" />
+        app:layout_constraintStart_toEndOf="@+id/genBackButton" />
 
     <Button
-        android:id="@+id/backButton"
+        android:id="@+id/genBackButton"
         android:layout_width="156dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
