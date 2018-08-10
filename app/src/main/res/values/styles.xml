@@ -48,6 +48,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">71dp</item>
         <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
     </style>
 
     <style name="introText">
@@ -58,6 +59,7 @@
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginTop">24dp</item>
         <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
     </style>
 
     <style name="subTitle">
@@ -69,6 +71,7 @@
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginTop">16dp</item>
+        <item name="android:textAlignment">center</item>
     </style>
 
     <style name="formLabel">
