@@ -1,5 +1,8 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.widget.EdgeEffect;
 
 import java.sql.PreparedStatement;
@@ -16,13 +19,13 @@ public class PurchaseManager extends Manager {
     public static final String[] UNEDIT_FIELDS = {"id_shoppinglist", "deleted"};
 
     //Constructors
-    public PurchaseManager() {
-        super();
+    public PurchaseManager(Context context) {
+        super(context);
         this.setTable("Purchase");
     }
 
-    public PurchaseManager(DbFactory dbF) {
-        super(dbF);
+    public PurchaseManager() {
+        super();
         this.setTable("Purchase");
     }
 
@@ -31,18 +34,17 @@ public class PurchaseManager extends Manager {
         try {
             for (int i = 0; i < purchase.size(); i++) {
                 Meal currentMeal = purchase.getMeals().get(i);
-                String query = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)",
-                        this.getTable(), UNEDIT_FIELDS[0], EDIT_FIELDS[0]);
-                PreparedStatement st = this.getConnector().prepareStatement(query);
-                st.setInt(1, purchase.getId());
-                st.setInt(2, currentMeal.getId());
-                if (st.executeUpdate() == 0) {
-                    return false;
-                }
+                ContentValues data = new ContentValues();
+
+                data.put(UNEDIT_FIELDS[0], purchase.getId());
+                data.put(EDIT_FIELDS[0], currentMeal.getId());
+
+                this.database.insert(this.table, null, data);
             }
             return true;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -50,21 +52,18 @@ public class PurchaseManager extends Manager {
     public boolean fullDbCreate(Purchase purchase) {
         try {
             MealManager m_mgr = new MealManager();
+
             for (int i = 0; i < purchase.getMeals().size(); i++) {
                 Meal currentMeal = purchase.getMeals().get(i);
+
                 m_mgr.fullDbCreate(currentMeal);
-                String query = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)",
-                        this.getTable(), UNEDIT_FIELDS[0], EDIT_FIELDS[0]);
-                PreparedStatement st = this.getConnector().prepareStatement(query);
-                st.setInt(1, purchase.getId());
-                st.setInt(2, currentMeal.getId());
-                if (st.executeUpdate() == 0) {
-                    return false;
-                }
             }
+            this.dbCreate(purchase);
+
             return true;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s full creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -96,11 +95,8 @@ public class PurchaseManager extends Manager {
 
     public boolean dbHardDelete(Purchase purchase) {
         try {
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, purchase.getId());
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
+            return this.dbHardDelete(purchase.getId());
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
@@ -125,16 +121,15 @@ public class PurchaseManager extends Manager {
     public boolean fullDbHardDelete(Purchase purchase) {
         try {
             MealManager m_mgr = new MealManager();
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, purchase.getId());
-            boolean status = st.executeUpdate() != 0;
+            boolean status = this.dbHardDelete(purchase);
+
             for (int i = 0; i < purchase.size(); i++) {
                 m_mgr.fullDbHardDelete(purchase.getMeal(i));
             }
             return status;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -153,11 +148,11 @@ public class PurchaseManager extends Manager {
 
     public boolean dbHardDelete(int id) {
         try {
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, id);
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
+            String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = new String[]{String.valueOf(id)};
+
+            return (this.database.delete(this.table, whereClause, whereArgs) != 0);
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
@@ -184,16 +179,15 @@ public class PurchaseManager extends Manager {
         try {
             MealManager m_mgr = new MealManager();
             Purchase purchase = this.dbLoad(id);
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, id);
-            boolean status = st.executeUpdate() != 0;
+            boolean status = this.dbHardDelete(id);
+
             for (int i = 0; i < purchase.size(); i++) {
                 m_mgr.fullDbHardDelete(purchase.getMeal(i));
             }
             return status;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }

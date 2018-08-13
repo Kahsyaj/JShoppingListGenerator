@@ -1,16 +1,30 @@
 package personnal.ahsyaj.jshoppinglistgenerator;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.DbFactory;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 
 public class MainActivity extends AppCompatActivity {
     //Data
+    private static MainActivity activity;
     private String category = "";
+    public static String[] confFields = {"user", "password", "database", "host", "port", "language"};
+    private String user = "";
+    private String password = "";
+    private String database = "";
+    private String host = "";
+    private String port = "";
+    private String language = "";
 
     //Buttons
     //Main menu
@@ -56,6 +70,25 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.setupSaveButton:
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                    SharedPreferences.Editor prefsEditor = prefs.edit();
+                    TextView userName = findViewById(R.id.userNameInput);
+                    TextView password = findViewById(R.id.passwordInput);
+                    TextView database = findViewById(R.id.databaseInput);
+                    TextView host = findViewById(R.id.hostInput);
+                    TextView port = findViewById(R.id.portInput);
+                    Spinner language = findViewById(R.id.languageInput);
+
+                    prefsEditor.putString(confFields[0], userName.getText().toString());
+                    prefsEditor.putString(confFields[1], password.getText().toString());
+                    prefsEditor.putString(confFields[2], database.getText().toString());
+                    prefsEditor.putString(confFields[3], host.getText().toString());
+                    prefsEditor.putString(confFields[4], port.getText().toString());
+                    prefsEditor.putString(confFields[5], language.getSelectedItem().toString());
+                    prefsEditor.commit();
+                    MainActivity.this.getConfig();
+                    MainActivity.this.setContentView(R.layout.activity_main);
+                    MainActivity.this.initMainLayoutButtons();
                     break;
 
                 case R.id.catBackButton:
@@ -102,13 +135,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Constructor
+    public MainActivity() {
+        super();
+        MainActivity.activity = this;
+    }
+
+    //Getters
+    public static MainActivity getActivity() {
+        return MainActivity.activity;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println(e.getMessage());
+        }
+
         this.setContentView(R.layout.activity_main);
 
         this.initMainLayoutButtons();
+        this.getConfig();
+
+        IngredientManager ing_mgr = new IngredientManager(new DbFactory(this.user, this.password, this.database, this.host, this.port));
+        System.out.println(ing_mgr.dbLoad(1).toString());
     }
 
     public boolean initMainLayoutButtons() {
@@ -184,5 +238,15 @@ public class MainActivity extends AppCompatActivity {
         this.reloadButton.setOnClickListener(new CustomButtonOnClickListener());
         this.genBackButton.setOnClickListener(new CustomButtonOnClickListener());
         return true;
+    }
+
+    public void getConfig() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        this.user = prefs.getString(confFields[0], "id6237985_ahsyaj");
+        this.password = prefs.getString(confFields[1], "frk7xet3g5pny");
+        this.database = prefs.getString(confFields[2], "id6237985_shoppinglistgenerator");
+        this.host = prefs.getString(confFields[3], "https://shoppinglistgenerator.000webhostapp.com/");
+        this.port = prefs.getString(confFields[4], "3306");
+        this.language = prefs.getString(confFields[5], "English");
     }
 }

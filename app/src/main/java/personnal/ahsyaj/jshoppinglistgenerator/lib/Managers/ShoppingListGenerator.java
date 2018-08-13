@@ -1,5 +1,7 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
+import android.content.Context;
+
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,14 +15,19 @@ public class ShoppingListGenerator extends Manager {
     private int mealNumber;
 
     //Constructors
-    public ShoppingListGenerator() {
-        super();
-        this.mealNumber = 0;
+    public ShoppingListGenerator(Context context, int nb) {
+        super(context);
+        this.mealNumber = nb;
     }
 
     public ShoppingListGenerator(int nb) {
         super();
         this.mealNumber = nb;
+    }
+
+    public ShoppingListGenerator() {
+        super();
+        this.mealNumber = 0;
     }
 
     //Getters

@@ -1,5 +1,9 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,13 +17,13 @@ public class ShoppingListManager extends Manager {
     public static final String[] UNEDIT_FIELDS = {"id_shoppinglist", "deleted"};
 
     //Constructors
-    public ShoppingListManager() {
-        super();
+    public ShoppingListManager(Context context) {
+        super(context);
         this.setTable("ShoppingList");
     }
 
-    public ShoppingListManager(DbFactory dbF) {
-        super(dbF);
+    public ShoppingListManager() {
+        super();
         this.setTable("ShoppingList");
     }
 
@@ -27,15 +31,20 @@ public class ShoppingListManager extends Manager {
     public boolean dbCreate(ShoppingList shoppinglist) {
         try {
             int currentId = this.getCurrentId();
-            String query = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)", this.getTable(), UNEDIT_FIELDS[0], EDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, currentId);
-            st.setString(2, shoppinglist.getDate());
-            st.executeUpdate();
+
+            ContentValues data = new ContentValues();
+
+            data.put(UNEDIT_FIELDS[0], currentId);
+            data.put(EDIT_FIELDS[0], shoppinglist.getDate());
+
+            this.database.insert(this.table, null, data);
+
             shoppinglist.setId(currentId);
+
             return true;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -43,17 +52,15 @@ public class ShoppingListManager extends Manager {
     public boolean FullDbCreate(ShoppingList shoppinglist) {
         try {
             PurchaseManager p_mgr = new PurchaseManager();
-            int currentId = this.getCurrentId();
-            String query = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)", this.getTable(), UNEDIT_FIELDS[0], EDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, currentId);
-            st.setString(2, shoppinglist.getDate());
-            st.executeUpdate();
-            shoppinglist.setId(currentId);
+
+            this.dbCreate(shoppinglist);
+
             p_mgr.fullDbCreate(shoppinglist.getPurchase());
+
             return true;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s full creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -100,11 +107,8 @@ public class ShoppingListManager extends Manager {
 
     public boolean dbHardDelete(ShoppingList shoppinglist) {
         try {
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, shoppinglist.getId());
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
+            return this.dbHardDelete(shoppinglist.getId());
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
@@ -142,12 +146,13 @@ public class ShoppingListManager extends Manager {
 
     public boolean dbSoftDelete(int id) {
         try {
-            String query = String.format("UPDATE %s SET %s = 1 WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[1], UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, id);
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
+            String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = new String[]{String.valueOf(id)};
+
+            return (this.database.delete(this.table, whereClause, whereArgs) != 0);
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -181,13 +186,12 @@ public class ShoppingListManager extends Manager {
     public boolean fullDbHardDelete(int id) {
         try {
             PurchaseManager p_mgr = new PurchaseManager();
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, id);
-            boolean status = st.executeUpdate() != 0;
+            boolean status = this.dbHardDelete(id);
+
             p_mgr.fullDbHardDelete(id);
+
             return status;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }

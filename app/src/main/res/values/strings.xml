@@ -29,4 +29,7 @@
 
     <string name="category">CategoryName</string>
     <string name="item_name">Item name</string>
+    <string name="host">Host</string>
+    <string name="port">Port</string>
+    <string name="defaultPort">3306</string>
 </resources>

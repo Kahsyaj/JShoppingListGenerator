@@ -55,20 +55,56 @@
         app:layout_constraintTop_toBottomOf="@+id/setupTitle"
         app:layout_constraintVertical_bias="0.0">
 
+        <EditText
+            android:id="@+id/portInput"
+            style="@style/formInput"
+            android:inputType="textPersonName|number"
+            android:labelFor="@id/hostText"
+            android:text="@string/defaultPort"
+            app:layout_constraintBottom_toTopOf="@+id/languageInput"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/portText"
+            app:layout_constraintTop_toBottomOf="@+id/hostInput" />
+
+        <TextView
+            android:id="@+id/portText"
+            style="@style/formLabel"
+            android:text="@string/port"
+            app:layout_constraintBottom_toTopOf="@+id/languageText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hostText" />
+
+        <EditText
+            android:id="@+id/hostInput"
+            style="@style/formInput"
+            android:inputType="textPersonName"
+            android:labelFor="@id/hostText"
+            app:layout_constraintBottom_toTopOf="@+id/portInput"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/hostText"
+            app:layout_constraintTop_toBottomOf="@+id/databaseInput" />
+
+        <TextView
+            android:id="@+id/hostText"
+            style="@style/formLabel"
+            android:text="@string/host"
+            app:layout_constraintBottom_toTopOf="@+id/portText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/databaseText" />
+
         <TextView
             android:id="@+id/languageText"
             style="@style/formLabel"
             android:text="@string/language"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/databaseText" />
+            app:layout_constraintTop_toBottomOf="@+id/portText" />
 
         <EditText
             android:id="@+id/databaseInput"
             style="@style/formInput"
-            android:layout_height="30dp"
             android:inputType="textPersonName"
             android:labelFor="@id/databaseText"
-            app:layout_constraintBottom_toTopOf="@+id/languageInput"
+            app:layout_constraintBottom_toTopOf="@+id/hostInput"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/databaseText"
@@ -78,7 +114,7 @@
             android:id="@+id/databaseText"
             style="@style/formLabel"
             android:text="@string/database"
-            app:layout_constraintBottom_toTopOf="@+id/languageText"
+            app:layout_constraintBottom_toTopOf="@+id/hostText"
             app:layout_constraintEnd_toStartOf="@+id/databaseInput"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +139,8 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.444" />
+            app:layout_constraintVertical_bias="0.444"
+            app:layout_constraintVertical_chainStyle="spread_inside" />
 
         <EditText
             android:id="@+id/passwordInput"
@@ -131,16 +168,13 @@
 
         <Spinner
             android:id="@+id/languageInput"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
+            style="@style/formInput"
             android:entries="@array/languages"
             android:labelFor="@id/languageText"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/languageText"
-            app:layout_constraintTop_toBottomOf="@+id/databaseInput" />
+            app:layout_constraintTop_toBottomOf="@+id/portInput" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

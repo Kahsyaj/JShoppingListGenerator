@@ -1,5 +1,9 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,13 +17,13 @@ public class IngredientManager extends Manager {
     public static final String[] UNEDIT_FIELDS = {"id_ingredient", "deleted"};
 
     //Constructors
-    public IngredientManager() {
-        super();
+    public IngredientManager(Context context) {
+        super(context);
         this.setTable("Ingredient");
     }
 
-    public IngredientManager(DbFactory dbF) {
-        super(dbF);
+    public IngredientManager() {
+        super();
         this.setTable("Ingredient");
     }
 
@@ -27,14 +31,19 @@ public class IngredientManager extends Manager {
     public boolean dbCreate(Ingredient ingredient) {
         try {
             int currentId = this.getCurrentId();
-            String query = String.format("INSERT INTO %s (%s) VALUES (?)", this.getTable(), EDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setString(1, ingredient.getName());
-            st.executeUpdate();
+            ContentValues data = new ContentValues();
+
+            data.put(UNEDIT_FIELDS[0], currentId);
+            data.put(UNEDIT_FIELDS[1], ingredient.getName());
+
+            this.database.insert(this.table, null, data);
+
             ingredient.setId(currentId);
+
             return true;
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -48,6 +57,7 @@ public class IngredientManager extends Manager {
             return st.executeUpdate() != 0;
         } catch (SQLException e) {
             System.err.println(String.format("An error occurred with the %s updating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -66,12 +76,10 @@ public class IngredientManager extends Manager {
 
     public boolean dbHardDelete(Ingredient ingredient) {
         try {
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, ingredient.getId());
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
+            return this.dbHardDelete(ingredient.getId());
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -90,12 +98,13 @@ public class IngredientManager extends Manager {
 
     public boolean dbHardDelete(int id) {
         try {
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, id);
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
+            String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = new String[]{String.valueOf(id)};
+
+            return (this.database.delete(this.table, whereClause, whereArgs) != 0);
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }

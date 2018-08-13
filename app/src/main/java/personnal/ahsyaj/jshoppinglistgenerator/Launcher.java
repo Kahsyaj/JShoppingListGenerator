@@ -44,9 +44,9 @@ public class Launcher {
         * ShoppingListManager : dbLoad ; getCurrentId ; dbCreate ; softDelete ; restoreSoftDeleted ; getIds ;
         * ShoppingListGenerator : generate ;
         * */
-        IngredientManager ing_mgr = new IngredientManager();
-        Ingredient ing = ing_mgr.dbLoad(17);
-        ing.setName("bloublou");
+        IngredientManager ing_mgr = new IngredientManager(new DbFactory("id6237985_ahsyaj", "frk7xet3g5pny", "id6237985_shoppinglistgenerator", "localhost", "3306"));
+        ing_mgr.initDb();
+
         Ingredient ing2 = ing_mgr.dbLoad(149);
         Ingredient ing3 = new Ingredient("lololo vfvf");
         //ing_mgr.dbCreate(ing2);
@@ -57,7 +57,7 @@ public class Launcher {
         Recipe rcp = rcp_mgr.dbLoad(1);
         ArrayList<Ingredient> ing_lst = new ArrayList<>();
         ArrayList<Integer> int_lst = new ArrayList<>();
-        ing_lst.add(ing);
+
         ing_lst.add(ing2);
         int_lst.add(new Integer(8000));
         int_lst.add(new Integer(10000));
