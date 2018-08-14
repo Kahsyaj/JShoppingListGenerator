@@ -149,7 +149,7 @@ public class PurchaseManager extends Manager {
     public boolean dbHardDelete(int id) {
         try {
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
-            String[] whereArgs = new String[]{String.valueOf(id)};
+            String[] whereArgs = {String.valueOf(id)};
 
             return (this.database.delete(this.table, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {

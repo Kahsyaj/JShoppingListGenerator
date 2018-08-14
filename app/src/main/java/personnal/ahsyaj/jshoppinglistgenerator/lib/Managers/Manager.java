@@ -1,7 +1,9 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -92,11 +94,16 @@ public abstract class Manager {
 
     public boolean restoreSoftDeleted() {
         try {
-            String query = String.format("UPDATE %s SET deleted = 0 WHERE deleted = 1", this.getTable());
-            Statement st = this.getConnector().createStatement();
-            return st.executeUpdate(query) != 0;
-        } catch (SQLException e) {
+            ContentValues data = new ContentValues();
+            String whereClause = "deleted = ?";
+            String[] whereArgs = {"0"};
+
+            data.put("deleted", 0);
+
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with all soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }

@@ -147,7 +147,7 @@ public class ShoppingListManager extends Manager {
     public boolean dbSoftDelete(int id) {
         try {
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
-            String[] whereArgs = new String[]{String.valueOf(id)};
+            String[] whereArgs = {String.valueOf(id)};
 
             return (this.database.delete(this.table, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
@@ -159,12 +159,13 @@ public class ShoppingListManager extends Manager {
 
     public boolean dbHardDelete(int id) {
         try {
-            String query = String.format("DELETE FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
-            PreparedStatement st = this.getConnector().prepareStatement(query);
-            st.setInt(1, id);
-            return st.executeUpdate() != 0;
-        } catch (SQLException e) {
+            String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = new String[]{String.valueOf(id)};
+
+            return (this.database.delete(this.table, whereClause, whereArgs) != 0);
+        } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
