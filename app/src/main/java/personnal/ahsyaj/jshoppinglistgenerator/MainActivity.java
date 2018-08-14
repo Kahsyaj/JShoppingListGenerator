@@ -242,10 +242,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void getConfig() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        this.user = prefs.getString(confFields[0], "id6237985_ahsyaj");
-        this.password = prefs.getString(confFields[1], "frk7xet3g5pny");
-        this.database = prefs.getString(confFields[2], "id6237985_shoppinglistgenerator");
-        this.host = prefs.getString(confFields[3], "https://shoppinglistgenerator.000webhostapp.com/");
+        this.user = prefs.getString(confFields[0], "root");
+        this.password = prefs.getString(confFields[1], "root");
+        this.database = prefs.getString(confFields[2], "ShoppingListGenerator");
+        this.host = prefs.getString(confFields[3], "localhost");
         this.port = prefs.getString(confFields[4], "3306");
         this.language = prefs.getString(confFields[5], "English");
     }
