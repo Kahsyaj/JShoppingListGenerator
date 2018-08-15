@@ -1,4 +1,7 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ public class Purchase extends Entity {
         this.meals = meals;
     }
 
-    public Purchase(ResultSet rslt, boolean close) {
+    public Purchase(Cursor rslt, boolean close) {
         super();
         this.init(rslt, close);
     }
@@ -54,25 +57,27 @@ public class Purchase extends Entity {
 
     @Override
     public String toString() {
-        String repr = String.format("[Purchase]\n[%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId()));
+        StringBuilder repr = new StringBuilder(String.format("[Purchase]\n[%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId())));
+
         for (int i = 0; i < this.size(); i++) {
-            repr += this.getMeal(i).toString();
+            repr.append(this.getMeal(i).toString());
         }
-        return repr;
+        return repr.toString();
     }
 
-    public void init(ResultSet rslt, boolean close) {
+    public void init(Cursor rslt, boolean close) {
         try {
             MealManager meal_mgr = new MealManager();
-            this.setId(rslt.getInt(DB_FIELDS[0]));
-            this.setDeleted(rslt.getInt(DB_FIELDS[2]));
+
+            this.setId(rslt.getInt(0));
+            this.setDeleted(rslt.getInt(2));
             do {
-                this.addMeal(meal_mgr.dbLoad(rslt.getInt(DB_FIELDS[1])));
-            } while (rslt.next());
+                this.addMeal(meal_mgr.dbLoad(rslt.getInt(1)));
+            } while (rslt.moveToNext());
             if (close) {
                 rslt.close();
             }
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println("An error occurred with the purchase init.\n" + e.getMessage());
         }
     }

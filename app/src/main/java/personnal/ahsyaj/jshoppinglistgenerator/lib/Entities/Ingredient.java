@@ -1,5 +1,8 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -13,7 +16,7 @@ public class Ingredient extends Entity {
         this.name = "";
     }
 
-    public Ingredient(ResultSet rslt, boolean close) {
+    public Ingredient(Cursor rslt, boolean close) {
         super();
         this.init(rslt, close);
     }
@@ -46,15 +49,15 @@ public class Ingredient extends Entity {
                 String.valueOf(this.getId()), this.getName());
     }
 
-    public void init(ResultSet rslt, boolean close) {
+    public void init(Cursor rslt, boolean close) {
         try {
-            this.setId(rslt.getInt(DB_FIELDS[0]));
-            this.setName(rslt.getNString(DB_FIELDS[1]));
-            this.setDeleted(rslt.getInt(DB_FIELDS[2]));
+            this.setId(rslt.getInt(0));
+            this.setName(rslt.getString(1));
+            this.setDeleted(rslt.getInt(2));
             if (close) {
                 rslt.close();
             }
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println("An error occurred with the ingredient init.\n" + e.getMessage());
         }
     }

@@ -1,5 +1,8 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -17,7 +20,7 @@ public class Meal extends Entity {
         this.recipe = new Recipe();
     }
 
-    public Meal(ResultSet rslt, boolean close) {
+    public Meal(Cursor rslt, boolean close) {
         super();
         this.init(rslt, close);
     }
@@ -61,21 +64,23 @@ public class Meal extends Entity {
     @Override
     public String toString() {
         String repr = String.format("[Meal]\n[%s] : %s - [%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId()), DB_FIELDS[1], this.getName());
+
         repr += this.recipe.toString();
         return repr;
     }
 
-    public void init(ResultSet rslt, boolean close) {
+    public void init(Cursor rslt, boolean close) {
         try {
-            this.setId(rslt.getInt(DB_FIELDS[0]));
-            this.setName(rslt.getNString(DB_FIELDS[1]));
-            this.setDeleted(rslt.getInt(DB_FIELDS[2]));
             RecipeManager rcp_mgr = new RecipeManager();
+
+            this.setId(rslt.getInt(0));
+            this.setName(rslt.getString(1));
+            this.setDeleted(rslt.getInt(2));
             this.setRecipe(rcp_mgr.dbLoad(this.getId()));
             if (close) {
                 rslt.close();
             }
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println("An error occurred with the meal init.\n" + e.getMessage());
         }
     }

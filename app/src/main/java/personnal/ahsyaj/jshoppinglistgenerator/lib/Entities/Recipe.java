@@ -1,5 +1,8 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ public class Recipe extends Entity {
         super();
     }
 
-    public Recipe(ResultSet rslt, boolean close) {
+    public Recipe(Cursor rslt, boolean close) {
         super();
         this.init(rslt, close);
     }
@@ -102,27 +105,29 @@ public class Recipe extends Entity {
 
     @Override
     public String toString() {
-        String repr = String.format("[Recipe]\n[%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId()));
+        StringBuilder repr = new StringBuilder(String.format("[Recipe]\n[%s] : %s\n", DB_FIELDS[0], String.valueOf(this.getId())));
+
         for (int i = 0; i < this.size(); i++) {
-            repr += this.getIngredient(i).toString() + " - ";
-            repr += String.format("[quantity] : %s\n", this.getQuantities().get(i).toString());
+            repr.append(this.getIngredient(i).toString()).append(" - ");
+            repr.append(String.format("[quantity] : %s\n", this.getQuantities().get(i).toString()));
         }
-        return repr;
+        return repr.toString();
     }
 
-    public void init(ResultSet rslt, boolean close) {
+    public void init(Cursor rslt, boolean close) {
         try {
             IngredientManager ing_mgr = new IngredientManager();
-            this.setId(rslt.getInt(DB_FIELDS[0]));
-            this.setDeleted(rslt.getInt(DB_FIELDS[3]));
+
+            this.setId(rslt.getInt(0));
+            this.setDeleted(rslt.getInt(3));
             do {
-                this.ingredients.add(ing_mgr.dbLoad(rslt.getInt(DB_FIELDS[1])));
-                this.quantities.add(rslt.getInt(DB_FIELDS[2]));
-            } while (rslt.next());
+                this.ingredients.add(ing_mgr.dbLoad(rslt.getInt(1)));
+                this.quantities.add(rslt.getInt(2));
+            } while (rslt.moveToNext());
             if (close) {
                 rslt.close();
             }
-        } catch (SQLException e) {
+        } catch (SQLiteException e) {
             System.err.println("An error occurred with the recipe init.\n" + e.getMessage());
         }
     }
