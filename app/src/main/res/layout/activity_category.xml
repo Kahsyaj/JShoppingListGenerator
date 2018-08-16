@@ -7,7 +7,7 @@
     tools:context=".CategoryActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/itemFields"
+        android:id="@+id/itemList"
         style="@style/itemsList"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
         android:id="@+id/subTitle"
         style="@style/subTitle"
         android:text="@string/category"
-        app:layout_constraintBottom_toTopOf="@+id/itemFields"
+        app:layout_constraintBottom_toTopOf="@+id/itemList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"

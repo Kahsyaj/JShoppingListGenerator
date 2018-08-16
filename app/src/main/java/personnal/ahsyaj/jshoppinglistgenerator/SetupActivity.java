@@ -33,7 +33,7 @@ public class SetupActivity extends AppCompatActivity {
         this.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.getActivity());
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.activity);
                 SharedPreferences.Editor prefsEditor = prefs.edit();
                 TextView userName = findViewById(R.id.userNameInput);
                 TextView password = findViewById(R.id.passwordInput);

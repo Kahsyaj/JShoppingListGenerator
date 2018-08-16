@@ -3,9 +3,19 @@ package personnal.ahsyaj.jshoppinglistgenerator;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
 
 public class CategoryActivity extends AppCompatActivity {
 
@@ -15,14 +25,11 @@ public class CategoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TextView category = this.findViewById(R.id.subTitle);
+        this.setContentView(R.layout.activity_category);
 
-        this.setContentView(R.layout.category_layout);
+        TextView subTitle = this.findViewById(R.id.subTitle);
 
-        TextView itemName = this.findViewById(R.id.itemName);
-
-        itemName.setHint(String.format("%s name", category.getText().subSequence(0, (category.getText().length() - 1 ))));
-
+        subTitle.setText(MainActivity.category);
         this.initButtons();
     }
 
@@ -47,5 +54,22 @@ public class CategoryActivity extends AppCompatActivity {
             }
         });
         return true;
+    }
+
+    public void initView() {
+        RecyclerView itemLst = this.findViewById(R.id.itemList);
+        ArrayList elements = null;
+
+        switch(MainActivity.category) {
+            case "Ingredients":
+                elements = new IngredientManager().dbLoadAll();
+                break;
+            case "Meals":
+                elements = new MealManager().dbLoadAll();
+                break;
+            case "ShoppingLists":
+                elements = new ShoppingListManager().dbLoadAll();
+                break;
+        }
     }
 }

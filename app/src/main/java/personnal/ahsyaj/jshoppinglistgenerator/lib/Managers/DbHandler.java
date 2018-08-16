@@ -33,8 +33,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
         //ShoppingLists table
         db.execSQL("CREATE TABLE IF NOT EXISTS ShoppingList (id_shoppinglist INTEGER PRIMARY KEY " +
-                "AUTOINCREMENT, date_shoppinglist TEXT, deleted INTEGER(1) DEFAULT 0, CONSTRAINT " +
-                "ShoppingList_PK PRIMARY KEY (id_shoppinglist));");
+                "AUTOINCREMENT, date_shoppinglist TEXT, deleted INTEGER(1) DEFAULT 0);");
 
         //Purchases table
         db.execSQL("CREATE TABLE IF NOT EXISTS Purchase ( id_shoppinglist INTEGER NOT NULL, " +

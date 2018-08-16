@@ -3,6 +3,7 @@ package personnal.ahsyaj.jshoppinglistgenerator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,20 +12,19 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.DbFactory;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListGenerator;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
 
 public class MainActivity extends AppCompatActivity {
     //Data
-    private static MainActivity activity;
-    private String category = "";
-    public static String[] confFields = {"user", "password", "database", "host", "port", "language"};
-    private String user = "";
-    private String password = "";
-    private String database = "";
-    private String host = "";
-    private String port = "";
-    private String language = "";
+    public static MainActivity activity;
+    public static String[] CONF_FIELDS = {"user", "password", "database", "host", "port", "language"};
+    public static String category;
 
     //Buttons
     private Button ingredientsButton = null;
@@ -37,14 +37,22 @@ public class MainActivity extends AppCompatActivity {
     private class CustomButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            switch(view.getId()) {
+                case R.id.quitButton:
+                    MainActivity.this.finish();
+                    break;
+                case R.id.setupButton:
+                    Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
 
-            MainActivity.this.setContentView(R.layout.category_layout);
+                    MainActivity.this.startActivity(setupIntent);
+                    break;
+                default:
+                    MainActivity.category = (String) ((Button) view).getText();
+                    Intent categoryIntent = new Intent(MainActivity.this, CategoryActivity.class);
 
-            MainActivity.this.category = (String) ((Button) view).getText();
-
-            TextView subTitle = MainActivity.this.findViewById(R.id.subTitle);
-
-            subTitle.setText(MainActivity.this.category);
+                    MainActivity.this.startActivity(categoryIntent);
+                    break;
+            }
         }
     }
 
@@ -55,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Getters
-    public static MainActivity getActivity() {
-        return MainActivity.activity;
-    }
 
     //Other methods
     @Override
@@ -93,11 +98,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void getConfig() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        this.user = prefs.getString(confFields[0], "root");
-        this.password = prefs.getString(confFields[1], "root");
-        this.database = prefs.getString(confFields[2], "ShoppingListGenerator");
-        this.host = prefs.getString(confFields[3], "localhost");
-        this.port = prefs.getString(confFields[4], "3306");
-        this.language = prefs.getString(confFields[5], "English");
+    }
+
+    public static Manager getManager() {
+        Manager mgr = null;
+        switch (MainActivity.category) {
+            case "Ingredients":
+                mgr = new IngredientManager();
+                break;
+            case "Meals":
+                mgr = new MealManager();
+                break;
+            case "ShoppingLists":
+                mgr = new ShoppingListManager();
+                break;
+        }
+        return mgr;
     }
 }
