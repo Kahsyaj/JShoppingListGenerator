@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Recipe;
 
 
@@ -30,8 +31,9 @@ public class RecipeManager extends Manager {
     }
 
     //Other methods
-    public boolean dbCreate(Recipe recipe) {
+    public boolean dbCreate(Entity elt) {
         try {
+            Recipe recipe = (Recipe) elt;
             for (int i = 0; i < recipe.size(); i++) {
                 ContentValues data = new ContentValues();
 
@@ -64,8 +66,9 @@ public class RecipeManager extends Manager {
     }
 
     //Pretty dirty... But better than comparing all the ingredients and setting/deleting for each differences
-    public boolean dbUpdate(Recipe recipe) {
+    public boolean dbUpdate(Entity elt) {
         try {
+            Recipe recipe = (Recipe) elt;
             this.dbHardDelete(recipe);
             return this.dbCreate(recipe);
         } catch (SQLiteException e) {
@@ -111,7 +114,7 @@ public class RecipeManager extends Manager {
         try {
             boolean success = true;
             IngredientManager ing_mgr = new IngredientManager();
-            Recipe rcp = this.dbLoad(id);
+            Recipe rcp = (Recipe) this.dbLoad(id);
 
             for (int i = 0; i < rcp.size(); i++) {
                 success = (success && ing_mgr.dbSoftDelete(rcp.getIngredient(i)));
@@ -127,7 +130,7 @@ public class RecipeManager extends Manager {
         try {
             boolean success = this.dbHardDelete(id);
             IngredientManager ing_mgr = new IngredientManager();
-            Recipe rcp = this.dbLoad(id);
+            Recipe rcp = (Recipe) this.dbLoad(id);
 
             for (int i = 0; i < rcp.size(); i++) {
                 success = (success && ing_mgr.dbHardDelete(rcp.getIngredient(i)));
@@ -139,7 +142,7 @@ public class RecipeManager extends Manager {
         }
     }
 
-    public Recipe dbLoad(int id) {
+    public Entity dbLoad(int id) {
         try {
             String[] selectArgs = {String.valueOf(id)};
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
@@ -167,6 +170,7 @@ public class RecipeManager extends Manager {
             return null;
         }
     }
+
     public boolean restoreSoftDeleted(int id) {
         try {
             ContentValues data = new ContentValues();
@@ -229,7 +233,7 @@ public class RecipeManager extends Manager {
         try {
             boolean success = true;
             IngredientManager ing_mgr = new IngredientManager();
-            Recipe rcp = this.dbLoad(id);
+            Recipe rcp = (Recipe) this.dbLoad(id);
 
             for (int i = 0; i < rcp.size(); i++) {
                 success = (success && ing_mgr.restoreSoftDeleted(rcp.getIngredient(i).getId()));

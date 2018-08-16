@@ -72,7 +72,7 @@ public class Purchase extends Entity {
             this.setId(rslt.getInt(0));
             this.setDeleted(rslt.getInt(2));
             do {
-                this.addMeal(meal_mgr.dbLoad(rslt.getInt(1)));
+                this.addMeal((Meal)meal_mgr.dbLoad(rslt.getInt(1)));
             } while (rslt.moveToNext());
             if (close) {
                 rslt.close();

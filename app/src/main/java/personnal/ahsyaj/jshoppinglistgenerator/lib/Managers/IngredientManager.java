@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 
 public class IngredientManager extends Manager {
@@ -30,8 +31,9 @@ public class IngredientManager extends Manager {
     }
 
     //Other methods
-    public boolean dbCreate(Ingredient ingredient) {
+    public boolean dbCreate(Entity elt) {
         try {
+            Ingredient ingredient = (Ingredient) elt;
             int currentId = this.getCurrentId();
             ContentValues data = new ContentValues();
 
@@ -46,8 +48,9 @@ public class IngredientManager extends Manager {
         }
     }
 
-    public boolean dbUpdate(Ingredient ingredient) {
+    public boolean dbUpdate(Entity elt) {
         try {
+            Ingredient ingredient = (Ingredient) elt;
             ContentValues data = new ContentValues();
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
             String[] whereArgs = {String.valueOf(ingredient.getId())};
@@ -74,7 +77,7 @@ public class IngredientManager extends Manager {
         }
     }
 
-    public Ingredient dbLoad(String name) {
+    public Entity dbLoad(String name) {
         try {
             String[] selectArgs = {name};
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0",
@@ -145,7 +148,7 @@ public class IngredientManager extends Manager {
         }
     }
 
-    public boolean dbSoftDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean dbSoftDelete( Entity element) {
         try {
             return this.dbSoftDelete(element.getId());
         } catch (SQLiteException e) {
@@ -154,7 +157,7 @@ public class IngredientManager extends Manager {
         }
     }
 
-    public boolean dbHardDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean dbHardDelete(Entity element) {
         try {
             return this.dbHardDelete(element.getId());
         } catch (SQLiteException e) {

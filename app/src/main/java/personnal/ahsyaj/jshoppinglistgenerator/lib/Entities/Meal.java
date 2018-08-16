@@ -76,7 +76,7 @@ public class Meal extends Entity {
             this.setId(rslt.getInt(0));
             this.setName(rslt.getString(1));
             this.setDeleted(rslt.getInt(2));
-            this.setRecipe(rcp_mgr.dbLoad(this.getId()));
+            this.setRecipe((Recipe) rcp_mgr.dbLoad(this.getId()));
             if (close) {
                 rslt.close();
             }

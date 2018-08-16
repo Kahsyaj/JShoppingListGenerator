@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Purchase;
 
@@ -31,8 +32,9 @@ public class PurchaseManager extends Manager {
     }
 
     //Other methods
-    public boolean dbCreate(Purchase purchase) {
+    public boolean dbCreate(Entity elt) {
         try {
+            Purchase purchase = (Purchase) elt;
             for (int i = 0; i < purchase.size(); i++) {
                 Meal currentMeal = purchase.getMeals().get(i);
                 ContentValues data = new ContentValues();
@@ -64,8 +66,9 @@ public class PurchaseManager extends Manager {
         }
     }
 
-    public boolean dbUpdate(Purchase purchase) {
+    public boolean dbUpdate(Entity elt) {
         try {
+            Purchase purchase = (Purchase) elt;
             this.dbHardDelete(purchase);
             return this.dbCreate(purchase);
         } catch (SQLiteException e) {

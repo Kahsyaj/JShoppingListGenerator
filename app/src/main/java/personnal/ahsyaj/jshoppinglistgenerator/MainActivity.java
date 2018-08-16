@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
         this.setContentView(R.layout.activity_main);
         this.initButtons();
         this.getConfig();
+        IngredientManager mgr = new IngredientManager();
+        mgr.open();
+        mgr.dbCreate(new Ingredient("jojo"));
     }
 
     public boolean initButtons() {

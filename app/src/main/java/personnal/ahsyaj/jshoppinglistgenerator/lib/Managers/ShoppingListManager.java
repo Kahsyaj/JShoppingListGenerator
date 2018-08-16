@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
 
 public class ShoppingListManager extends Manager {
@@ -29,8 +30,9 @@ public class ShoppingListManager extends Manager {
     }
 
     //Other methods
-    public boolean dbCreate(ShoppingList shoppinglist) {
+    public boolean dbCreate(Entity elt) {
         try {
+            ShoppingList shoppinglist = (ShoppingList) elt;
             int currentId = this.getCurrentId();
             ContentValues data = new ContentValues();
 
@@ -57,8 +59,9 @@ public class ShoppingListManager extends Manager {
         }
     }
 
-    public boolean dbUpdate(ShoppingList shoppinglist) {
+    public boolean dbUpdate(Entity elt) {
         try {
+            ShoppingList shoppinglist = (ShoppingList) elt;
             ContentValues data = new ContentValues();
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
             String[] whereArgs = {String.valueOf(shoppinglist.getId())};
@@ -125,7 +128,7 @@ public class ShoppingListManager extends Manager {
         }
     }
 
-    public ShoppingList dbLoad(int id) {
+    public Entity dbLoad(int id) {
         try {
             String[] selectArgs = {String.valueOf(id)};
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0",

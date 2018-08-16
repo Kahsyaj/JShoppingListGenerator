@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 
 public class MealManager extends Manager {
@@ -30,8 +31,9 @@ public class MealManager extends Manager {
     }
 
     //Other methods
-    public boolean dbCreate(Meal meal) {
+    public boolean dbCreate(Entity elt) {
         try {
+            Meal meal = (Meal) elt;
             int currentId = this.getCurrentId();
             ContentValues data = new ContentValues();
 
@@ -62,8 +64,9 @@ public class MealManager extends Manager {
         }
     }
 
-    public boolean dbUpdate(Meal meal) {
+    public boolean dbUpdate(Entity elt) {
         try {
+            Meal meal = (Meal) elt;
             ContentValues data = new ContentValues();
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
             String[] whereArgs = {String.valueOf(meal.getId())};
@@ -135,7 +138,7 @@ public class MealManager extends Manager {
         }
     }
 
-    public Meal dbLoad(int id) {
+    public Entity dbLoad(int id) {
         try {
             String[] selectArgs = {String.valueOf(id)};
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0",

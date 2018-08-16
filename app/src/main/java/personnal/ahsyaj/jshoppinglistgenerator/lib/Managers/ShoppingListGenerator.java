@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Purchase;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
 
-public class ShoppingListGenerator extends Manager {
+public class ShoppingListGenerator {
     private int mealNumber;
 
     //Constructors
     public ShoppingListGenerator(Context context, int nb) {
-        super(context);
         this.mealNumber = nb;
     }
 
@@ -52,7 +52,7 @@ public class ShoppingListGenerator extends Manager {
         for (int i = 0; i < this.mealNumber && ids.size() > 0; i++) {
             int rdmI = (int) (Math.random() * (ids.size() - 1));
             System.out.println(rdmI);
-            purchase.addMeal(m_mgr.dbLoad(ids.get(rdmI)));
+            purchase.addMeal((Meal)m_mgr.dbLoad(ids.get(rdmI)));
             ids.remove(rdmI);
         }
         p_mgr.dbCreate(purchase);

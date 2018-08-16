@@ -1,8 +1,8 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Entity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -15,6 +15,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.MainActivity;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 
 public abstract class Manager {
     protected final static int VERSION = 1;
@@ -79,7 +80,13 @@ public abstract class Manager {
         this.handler.close();
     }
 
-    public int getElementsNumber() {
+    public abstract boolean dbCreate(Entity elt);
+
+    public abstract boolean dbUpdate(Entity elt);
+
+    public abstract Entity dbLoad(int id);
+
+        public int getElementsNumber() {
         try {
             Cursor rslt = this.database.rawQuery(String.format("SELECT COUNT(*) as cpt FROM %s",
                     this.getTable()), null);
