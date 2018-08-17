@@ -1,15 +1,20 @@
 package personnal.ahsyaj.jshoppinglistgenerator;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Adapters.ItemsAdapter;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
@@ -18,9 +23,15 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
 
 public class CategoryActivity extends AppCompatActivity {
+    public static CategoryActivity activity;
 
     private Button backButton = null;
     private Button addButton = null;
+
+    public CategoryActivity() {
+        super();
+        CategoryActivity.activity = this;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +42,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         subTitle.setText(MainActivity.category);
         this.initButtons();
+        this.initView();
     }
 
     public boolean initButtons() {
@@ -57,8 +69,7 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     public void initView() {
-        RecyclerView itemLst = this.findViewById(R.id.itemList);
-        ArrayList elements = null;
+        ArrayList<Entity> elements = null;
 
         switch(MainActivity.category) {
             case "Ingredients":
@@ -71,5 +82,13 @@ public class CategoryActivity extends AppCompatActivity {
                 elements = new ShoppingListManager().dbLoadAll();
                 break;
         }
+
+        RecyclerView itemLst = this.findViewById(R.id.itemList);
+        ItemsAdapter adapter = new ItemsAdapter(elements, R.layout.item_row);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager((this.getApplicationContext()));
+
+        itemLst.setLayoutManager(layoutManager);
+        itemLst.setItemAnimator(new DefaultItemAnimator());
+        itemLst.setAdapter(adapter);
     }
 }

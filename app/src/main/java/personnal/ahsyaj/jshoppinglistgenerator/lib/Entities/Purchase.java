@@ -81,5 +81,9 @@ public class Purchase extends Entity {
             System.err.println("An error occurred with the purchase init.\n" + e.getMessage());
         }
     }
+
+    public String className() {
+        return "Purchase";
+    }
 }
 

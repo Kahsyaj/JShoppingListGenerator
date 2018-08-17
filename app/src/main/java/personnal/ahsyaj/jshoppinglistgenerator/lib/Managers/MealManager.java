@@ -5,10 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 
@@ -52,8 +48,9 @@ public class MealManager extends Manager {
         }
     }
 
-    public boolean fullDbCreate(Meal meal) {
+    public boolean fullDbCreate(Entity elt) {
         try {
+            Meal meal = (Meal) elt;
             RecipeManager rcp_mgr = new RecipeManager();
 
             return (this.dbCreate(meal) && rcp_mgr.dbCreate(meal.getRecipe()));
@@ -81,8 +78,9 @@ public class MealManager extends Manager {
         }
     }
 
-    public boolean fullDbUpdate(Meal meal) {
+    public boolean fullDbUpdate(Entity elt) {
         try {
+            Meal meal = (Meal) elt;
             RecipeManager rcp_mgr = new RecipeManager();
 
             return (rcp_mgr.dbUpdate(meal.getRecipe()) && this.dbUpdate(meal));
@@ -93,52 +91,7 @@ public class MealManager extends Manager {
         }
     }
 
-    public boolean fullDbSoftDelete(Meal meal) {
-        try {
-            return this.fullDbSoftDelete(meal.getId());
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
-
-            return false;
-        }
-    }
-
-    public boolean fullDbHardDelete(Meal meal) {
-        try {
-            RecipeManager rcp_mgr = new RecipeManager();
-
-            return (rcp_mgr.dbHardDelete(meal.getRecipe()) && this.dbHardDelete(meal));
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
-
-            return false;
-        }
-    }
-
-    public boolean fullDbSoftDelete(int id) {
-        try {
-            RecipeManager rcp_mgr = new RecipeManager();
-
-            return (rcp_mgr.dbSoftDelete(id) && this.dbSoftDelete(id));
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
-
-            return false;
-        }
-    }
-
-    public boolean fullDbHardDelete(int id) {
-        try {
-            RecipeManager rcp_mgr = new RecipeManager();
-
-            return (rcp_mgr.dbHardDelete(id) && this.dbHardDelete(id));
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
-    }
-
-    public Entity dbLoad(int id) {
+    public Meal dbLoad(int id) {
         try {
             String[] selectArgs = {String.valueOf(id)};
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0",
@@ -167,9 +120,9 @@ public class MealManager extends Manager {
         }
     }
 
-    public ArrayList<Meal> dbLoadAll() {
+    public ArrayList<Entity> dbLoadAll() {
         try {
-            ArrayList<Meal> mealLst = new ArrayList<>();
+            ArrayList<Entity> mealLst = new ArrayList<>();
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = 0", this.getTable(), UNEDIT_FIELDS[1]), null);
 
             while (rslt.moveToNext()) {
@@ -180,20 +133,6 @@ public class MealManager extends Manager {
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
             return null;
-        }
-    }
-
-    public boolean restoreSoftDeleted(int id) {
-        try {
-            ContentValues data = new ContentValues();
-            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
-            String[] whereArgs = {"1", String.valueOf(id)};
-
-            data.put(UNEDIT_FIELDS[1], 0);
-            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
-            return false;
         }
     }
 
@@ -211,6 +150,37 @@ public class MealManager extends Manager {
         }
     }
 
+    public boolean fullDbSoftDelete(int id) {
+        try {
+            RecipeManager rcp_mgr = new RecipeManager();
+
+            return (rcp_mgr.dbSoftDelete(id) && this.dbSoftDelete(id));
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
+
+            return false;
+        }
+    }
+
+    public boolean dbSoftDelete(Entity element) {
+        try {
+            return this.dbSoftDelete(element.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean fullDbSoftDelete(Entity elt) {
+        try {
+            return this.fullDbSoftDelete(elt.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
+
+            return false;
+        }
+    }
+
     public boolean dbHardDelete(int id) {
         try {
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
@@ -223,20 +193,46 @@ public class MealManager extends Manager {
         }
     }
 
-    public boolean dbSoftDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean fullDbHardDelete(int id) {
         try {
-            return this.dbSoftDelete(element.getId());
+            RecipeManager rcp_mgr = new RecipeManager();
+
+            return (rcp_mgr.dbHardDelete(id) && this.dbHardDelete(id));
         } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
 
-    public boolean dbHardDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean dbHardDelete(Entity elt) {
         try {
-            return this.dbHardDelete(element.getId());
+            return this.dbHardDelete(elt.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean fullDbHardDelete(Entity elt) {
+        try {
+            return this.fullDbHardDelete(elt.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+
+            return false;
+        }
+    }
+
+    public boolean restoreSoftDeleted(int id) {
+        try {
+            ContentValues data = new ContentValues();
+            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = {"1", String.valueOf(id)};
+
+            data.put(UNEDIT_FIELDS[1], 0);
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
@@ -286,5 +282,9 @@ public class MealManager extends Manager {
             System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
             return null;
         }
+    }
+
+    public String className() {
+        return "MealManager";
     }
 }

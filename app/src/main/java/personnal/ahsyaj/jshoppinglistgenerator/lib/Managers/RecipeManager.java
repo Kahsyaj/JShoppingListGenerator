@@ -5,12 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
+import personnal.ahsyaj.jshoppinglistgenerator.R;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Recipe;
 
@@ -49,8 +46,9 @@ public class RecipeManager extends Manager {
         }
     }
 
-    public boolean fullDbCreate(Recipe recipe) {
+    public boolean fullDbCreate(Entity elt) {
         try {
+            Recipe recipe = (Recipe) elt;
             boolean success = true;
             IngredientManager ing_mgr = new IngredientManager();
 
@@ -77,8 +75,9 @@ public class RecipeManager extends Manager {
         }
     }
 
-    public boolean fullDbUpdate(Recipe recipe) {
+    public boolean fullDbUpdate(Entity elt) {
         try {
+            Recipe recipe = (Recipe) elt;
             boolean success = true;
             IngredientManager ing_mgr = new IngredientManager();
 
@@ -92,57 +91,7 @@ public class RecipeManager extends Manager {
         }
     }
 
-    public boolean fullDbSoftDelete(Recipe recipe) {
-        try {
-            return this.fullDbSoftDelete(recipe.getId());
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean fullDbHardDelete(Recipe recipe) {
-        try {
-            return this.fullDbHardDelete(recipe.getId());
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean fullDbSoftDelete(int id) {
-        try {
-            boolean success = true;
-            IngredientManager ing_mgr = new IngredientManager();
-            Recipe rcp = (Recipe) this.dbLoad(id);
-
-            for (int i = 0; i < rcp.size(); i++) {
-                success = (success && ing_mgr.dbSoftDelete(rcp.getIngredient(i)));
-            }
-            return (success && this.dbSoftDelete(id));
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean fullDbHardDelete(int id) {
-        try {
-            boolean success = this.dbHardDelete(id);
-            IngredientManager ing_mgr = new IngredientManager();
-            Recipe rcp = (Recipe) this.dbLoad(id);
-
-            for (int i = 0; i < rcp.size(); i++) {
-                success = (success && ing_mgr.dbHardDelete(rcp.getIngredient(i)));
-            }
-            return success;
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
-    }
-
-    public Entity dbLoad(int id) {
+    public Recipe dbLoad(int id) {
         try {
             String[] selectArgs = {String.valueOf(id)};
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
@@ -155,9 +104,9 @@ public class RecipeManager extends Manager {
         }
     }
 
-    public ArrayList<Recipe> dbLoadAll() {
+    public ArrayList<Entity> dbLoadAll() {
         try {
-            ArrayList<Recipe> recipeLst = new ArrayList<>();
+            ArrayList<Entity> recipeLst = new ArrayList<>();
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = 0", this.getTable(), UNEDIT_FIELDS[1]), null);
 
             while (rslt.moveToNext()) {
@@ -168,20 +117,6 @@ public class RecipeManager extends Manager {
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
             return null;
-        }
-    }
-
-    public boolean restoreSoftDeleted(int id) {
-        try {
-            ContentValues data = new ContentValues();
-            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
-            String[] whereArgs = {"1", String.valueOf(id)};
-
-            data.put(UNEDIT_FIELDS[1], 0);
-            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
-            return false;
         }
     }
 
@@ -199,6 +134,40 @@ public class RecipeManager extends Manager {
         }
     }
 
+    public boolean fullDbSoftDelete(int id) {
+        try {
+            boolean success = true;
+            IngredientManager ing_mgr = new IngredientManager();
+            Recipe rcp = this.dbLoad(id);
+
+            for (int i = 0; i < rcp.size(); i++) {
+                success = (success && ing_mgr.dbSoftDelete(rcp.getIngredient(i)));
+            }
+            return (success && this.dbSoftDelete(id));
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean dbSoftDelete(Entity element) {
+        try {
+            return this.dbSoftDelete(element.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean fullDbSoftDelete(Entity elt) {
+        try {
+            return this.fullDbSoftDelete(elt.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean dbHardDelete(int id) {
         try {
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
@@ -211,16 +180,23 @@ public class RecipeManager extends Manager {
         }
     }
 
-    public boolean dbSoftDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean fullDbHardDelete(int id) {
         try {
-            return this.dbSoftDelete(element.getId());
+            boolean success = this.dbHardDelete(id);
+            IngredientManager ing_mgr = new IngredientManager();
+            Recipe rcp = this.dbLoad(id);
+
+            for (int i = 0; i < rcp.size(); i++) {
+                success = (success && ing_mgr.dbHardDelete(rcp.getIngredient(i)));
+            }
+            return success;
         } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
 
-    public boolean dbHardDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean dbHardDelete(Entity element) {
         try {
             return this.dbHardDelete(element.getId());
         } catch (SQLiteException e) {
@@ -229,11 +205,34 @@ public class RecipeManager extends Manager {
         }
     }
 
+    public boolean fullDbHardDelete(Entity elt) {
+        try {
+            return this.fullDbHardDelete(elt.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean restoreSoftDeleted(int id) {
+        try {
+            ContentValues data = new ContentValues();
+            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = {"1", String.valueOf(id)};
+
+            data.put(UNEDIT_FIELDS[1], 0);
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean fullRestoreSoftDeleted(int id) {
         try {
             boolean success = true;
             IngredientManager ing_mgr = new IngredientManager();
-            Recipe rcp = (Recipe) this.dbLoad(id);
+            Recipe rcp = this.dbLoad(id);
 
             for (int i = 0; i < rcp.size(); i++) {
                 success = (success && ing_mgr.restoreSoftDeleted(rcp.getIngredient(i).getId()));
@@ -279,5 +278,9 @@ public class RecipeManager extends Manager {
             System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
             return null;
         }
+    }
+
+    public String className() {
+        return "RecipeManager";
     }
 }

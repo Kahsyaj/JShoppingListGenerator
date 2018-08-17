@@ -4,16 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.text.Editable;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 
 public class IngredientManager extends Manager {
     private String[] EDIT_FIELDS = {"name_ingredient"};
@@ -38,7 +34,8 @@ public class IngredientManager extends Manager {
             ContentValues data = new ContentValues();
 
             data.put(UNEDIT_FIELDS[0], currentId);
-            data.put(UNEDIT_FIELDS[1], ingredient.getName());
+            data.put(EDIT_FIELDS[0], ingredient.getName());
+            System.out.println(data);
             this.database.insert(this.table, null, data);
             ingredient.setId(currentId);
             return true;
@@ -46,6 +43,10 @@ public class IngredientManager extends Manager {
             System.err.println(String.format("An error occurred with the %s creating.\n", this.getTable()) + e.getMessage());
             return false;
         }
+    }
+
+    public boolean fullDbCreate(Entity elt) {
+        return this.dbCreate(elt);
     }
 
     public boolean dbUpdate(Entity elt) {
@@ -63,6 +64,10 @@ public class IngredientManager extends Manager {
         }
     }
 
+    public boolean fullDbUpdate(Entity elt) {
+        return this.dbUpdate(elt);
+    }
+
     public Ingredient dbLoad(int id) {
         try {
             String[] selectArgs = {String.valueOf(id)};
@@ -77,7 +82,7 @@ public class IngredientManager extends Manager {
         }
     }
 
-    public Entity dbLoad(String name) {
+    public Ingredient dbLoad(String name) {
         try {
             String[] selectArgs = {name};
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0",
@@ -91,9 +96,9 @@ public class IngredientManager extends Manager {
         }
     }
 
-    public ArrayList<Ingredient> dbLoadAll() {
+    public ArrayList<Entity> dbLoadAll() {
         try {
-            ArrayList<Ingredient> ingLst = new ArrayList<>();
+            ArrayList<Entity> ingLst = new ArrayList<>();
             Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = 0",
                     this.getTable(), UNEDIT_FIELDS[1]), null);
 
@@ -105,20 +110,6 @@ public class IngredientManager extends Manager {
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
             return null;
-        }
-    }
-
-    public boolean restoreSoftDeleted(int id) {
-        try {
-            ContentValues data = new ContentValues();
-            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
-            String[] whereArgs = {"1", String.valueOf(id)};
-
-            data.put(UNEDIT_FIELDS[1], 0);
-            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
-            return false;
         }
     }
 
@@ -136,6 +127,23 @@ public class IngredientManager extends Manager {
         }
     }
 
+    public boolean fullDbSoftDelete(int id) {
+        return this.dbSoftDelete(id);
+    }
+
+    public boolean dbSoftDelete(Entity element) {
+        try {
+            return this.dbSoftDelete(element.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean fullDbSoftDelete(Entity elt) {
+        return this.dbSoftDelete(elt);
+    }
+
     public boolean dbHardDelete(int id) {
         try {
             String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
@@ -148,13 +156,8 @@ public class IngredientManager extends Manager {
         }
     }
 
-    public boolean dbSoftDelete( Entity element) {
-        try {
-            return this.dbSoftDelete(element.getId());
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
+    public boolean fullDbHardDelete(int id) {
+        return this.dbHardDelete(id);
     }
 
     public boolean dbHardDelete(Entity element) {
@@ -164,6 +167,28 @@ public class IngredientManager extends Manager {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
+    }
+
+    public boolean fullDbHardDelete(Entity elt) {
+        return this.dbHardDelete(elt);
+    }
+
+    public boolean restoreSoftDeleted(int id) {
+        try {
+            ContentValues data = new ContentValues();
+            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = {"1", String.valueOf(id)};
+
+            data.put(UNEDIT_FIELDS[1], 0);
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean fullRestoreSoftDeleted(int id) {
+        return this.restoreSoftDeleted(id);
     }
 
     public int getCurrentId() {
@@ -200,5 +225,9 @@ public class IngredientManager extends Manager {
             System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
             return null;
         }
+    }
+
+    public String className() {
+        return "IngredientManager";
     }
 }

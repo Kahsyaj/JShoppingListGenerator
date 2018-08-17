@@ -131,4 +131,8 @@ public class Recipe extends Entity {
             System.err.println("An error occurred with the recipe init.\n" + e.getMessage());
         }
     }
+
+    public String className() {
+        return "Recipe";
+    }
 }

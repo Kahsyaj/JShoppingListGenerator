@@ -1,7 +1,14 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
-public abstract class Entity {
-    private int id;
+import android.content.Intent;
+
+import java.io.Serializable;
+
+public abstract class Entity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private Integer id;
     private int deleted;
 
     //Constructors
@@ -16,7 +23,7 @@ public abstract class Entity {
     }
 
     //Getters
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
@@ -25,7 +32,7 @@ public abstract class Entity {
     }
 
     //Setters
-    public void setId(int newId) {
+    public void setId(Integer newId) {
         this.id = newId;
     }
 
@@ -34,4 +41,5 @@ public abstract class Entity {
     }
 
     //Other methods
+    public abstract String className();
 }

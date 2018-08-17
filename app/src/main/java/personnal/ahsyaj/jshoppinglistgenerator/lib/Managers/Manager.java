@@ -7,15 +7,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.MainActivity;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 
 public abstract class Manager {
     protected final static int VERSION = 1;
@@ -29,22 +24,20 @@ public abstract class Manager {
     //Constructors
     public Manager(Context context) {
         this.handler = new DbHandler(context, FILE_NAME, null, VERSION);
+        this.open();
     }
 
     public Manager() {
         this.handler = new DbHandler(MainActivity.activity, FILE_NAME, null, VERSION);
+        this.open();
+    }
+
+    //Destructor
+    public void finalize() {
+        this.close();
     }
 
     //Getters
-
-    public static int getVERSION() {
-        return VERSION;
-    }
-
-    public static String getFileName() {
-        return FILE_NAME;
-    }
-
     public SQLiteDatabase getDatabase() {
         return database;
     }
@@ -82,11 +75,43 @@ public abstract class Manager {
 
     public abstract boolean dbCreate(Entity elt);
 
+    public abstract boolean fullDbCreate(Entity elt);
+
     public abstract boolean dbUpdate(Entity elt);
+
+    public abstract boolean fullDbUpdate(Entity elt);
 
     public abstract Entity dbLoad(int id);
 
-        public int getElementsNumber() {
+    public abstract ArrayList<Entity> dbLoadAll();
+
+    public abstract boolean dbSoftDelete(int id);
+
+    public abstract boolean fullDbSoftDelete(int id);
+
+    public abstract boolean dbSoftDelete(Entity elt);
+
+    public abstract boolean fullDbSoftDelete(Entity elt);
+
+    public abstract boolean dbHardDelete(int id);
+
+    public abstract boolean fullDbHardDelete(int id);
+
+    public abstract boolean dbHardDelete(Entity elt);
+
+    public abstract boolean fullDbHardDelete(Entity elt);
+
+    public abstract boolean restoreSoftDeleted(int id);
+
+    public abstract boolean fullRestoreSoftDeleted(int id);
+
+    public abstract int getCurrentId();
+
+    public abstract ArrayList<Integer> getIds();
+
+    public abstract String className();
+
+    public int getElementsNumber() {
         try {
             Cursor rslt = this.database.rawQuery(String.format("SELECT COUNT(*) as cpt FROM %s",
                     this.getTable()), null);

@@ -84,4 +84,8 @@ public class Meal extends Entity {
             System.err.println("An error occurred with the meal init.\n" + e.getMessage());
         }
     }
+
+    public String className() {
+        return "Meal";
+    }
 }

@@ -4,12 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.widget.EdgeEffect;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
@@ -50,7 +45,8 @@ public class PurchaseManager extends Manager {
         }
     }
 
-    public boolean fullDbCreate(Purchase purchase) {
+    public boolean fullDbCreate(Entity elt) {
+        Purchase purchase = (Purchase) elt;
         try {
             boolean success = true;
             MealManager m_mgr = new MealManager();
@@ -77,8 +73,9 @@ public class PurchaseManager extends Manager {
         }
     }
 
-    public boolean fullDbUpdate(Purchase purchase) {
+    public boolean fullDbUpdate(Entity elt) {
         try {
+            Purchase purchase = (Purchase) elt;
             boolean success = true;
             MealManager m_mgr = new MealManager();
 
@@ -92,20 +89,46 @@ public class PurchaseManager extends Manager {
         }
     }
 
-    public boolean fullDbSoftDelete(Purchase purchase) {
+    public Purchase dbLoad(int id) {
         try {
-            return this.fullDbSoftDelete(purchase.getId());
+            String[] selectArgs = {String.valueOf(id)};
+            Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
+
+            rslt.moveToNext();
+            return new Purchase(rslt, true);
         } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
-            return false;
+            System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
+            return null;
         }
     }
 
-    public boolean fullDbHardDelete(Purchase purchase) {
+    public ArrayList<Entity> dbLoadAll() {
         try {
-            return this.fullDbHardDelete(purchase.getId());
+            ArrayList<Entity> purchaseLst = new ArrayList<>();
+            Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = 0",
+                    this.getTable(), UNEDIT_FIELDS[1]), null);
+
+            while (rslt.moveToNext()) {
+                purchaseLst.add(new Purchase(rslt, false));
+            }
+            rslt.close();
+            return purchaseLst;
         } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+            System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean dbSoftDelete(int id) {
+        try {
+            ContentValues data = new ContentValues();
+            String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = {String.valueOf(id)};
+
+            data.put(UNEDIT_FIELDS[1], 1);
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
@@ -126,76 +149,20 @@ public class PurchaseManager extends Manager {
         }
     }
 
-    public boolean fullDbHardDelete(int id) {
+    public boolean dbSoftDelete(Entity element) {
         try {
-            boolean success = this.dbHardDelete(id);
-            MealManager m_mgr = new MealManager();
-            Purchase purchase = this.dbLoad(id);
-
-            for (int i = 0; i < purchase.size(); i++) {
-                success = (success && m_mgr.fullDbHardDelete(purchase.getMeal(i)));
-            }
-            return success;
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
-    }
-
-    public Purchase dbLoad(int id) {
-        try {
-            String[] selectArgs = {String.valueOf(id)};
-            Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = ? AND %s = 0", this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
-
-            rslt.moveToNext();
-            return new Purchase(rslt, true);
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
-            return null;
-        }
-    }
-
-    public ArrayList<Purchase> dbLoadAll() {
-        try {
-            ArrayList<Purchase> purchaseLst = new ArrayList<>();
-            Cursor rslt = this.database.rawQuery(String.format("SELECT * FROM %s WHERE %s = 0",
-                    this.getTable(), UNEDIT_FIELDS[1]), null);
-
-            while (rslt.moveToNext()) {
-                purchaseLst.add(new Purchase(rslt, false));
-            }
-            rslt.close();
-            return purchaseLst;
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
-            return null;
-        }
-    }
-
-    public boolean restoreSoftDeleted(int id) {
-        try {
-            ContentValues data = new ContentValues();
-            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
-            String[] whereArgs = {"1", String.valueOf(id)};
-
-            data.put(UNEDIT_FIELDS[1], 0);
-            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
-        } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean dbSoftDelete(int id) {
-        try {
-            ContentValues data = new ContentValues();
-            String whereClause = String.format("%s = ?", UNEDIT_FIELDS[0]);
-            String[] whereArgs = {String.valueOf(id)};
-
-            data.put(UNEDIT_FIELDS[1], 1);
-            return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
+            return this.dbSoftDelete(element.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean fullDbSoftDelete(Entity elt) {
+        try {
+            return this.fullDbSoftDelete(elt.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
@@ -212,20 +179,50 @@ public class PurchaseManager extends Manager {
         }
     }
 
-    public boolean dbSoftDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean fullDbHardDelete(int id) {
         try {
-            return this.dbSoftDelete(element.getId());
+            boolean success = this.dbHardDelete(id);
+            MealManager m_mgr = new MealManager();
+            Purchase purchase = this.dbLoad(id);
+
+            for (int i = 0; i < purchase.size(); i++) {
+                success = (success && m_mgr.fullDbHardDelete(purchase.getMeal(i)));
+            }
+            return success;
         } catch (SQLiteException e) {
-            System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
 
-    public boolean dbHardDelete(personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity element) {
+    public boolean dbHardDelete(Entity element) {
         try {
             return this.dbHardDelete(element.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean fullDbHardDelete(Entity elt) {
+        try {
+            return this.fullDbHardDelete(elt.getId());
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean restoreSoftDeleted(int id) {
+        try {
+            ContentValues data = new ContentValues();
+            String whereClause = String.format("deleted = ? AND %s = ?", UNEDIT_FIELDS[0]);
+            String[] whereArgs = {"1", String.valueOf(id)};
+
+            data.put(UNEDIT_FIELDS[1], 0);
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
             return false;
         }
     }
@@ -282,5 +279,9 @@ public class PurchaseManager extends Manager {
             System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
             return null;
         }
+    }
+
+    public String className() {
+        return "PurchaseManager";
     }
 }

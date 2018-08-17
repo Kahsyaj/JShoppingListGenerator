@@ -61,4 +61,8 @@ public class Ingredient extends Entity {
             System.err.println("An error occurred with the ingredient init.\n" + e.getMessage());
         }
     }
+
+    public String className() {
+        return "Ingredient";
+    }
 }

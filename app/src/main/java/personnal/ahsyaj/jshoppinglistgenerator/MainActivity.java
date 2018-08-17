@@ -46,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
 
                     MainActivity.this.startActivity(setupIntent);
                     break;
+                case R.id.generateButton:
+                    Intent generateIntent = new Intent(MainActivity.this, GenerateActivity.class);
+
+                    MainActivity.this.startActivity(generateIntent);
+                    break;
                 default:
                     MainActivity.category = (String) ((Button) view).getText();
                     Intent categoryIntent = new Intent(MainActivity.this, CategoryActivity.class);
@@ -71,9 +76,6 @@ public class MainActivity extends AppCompatActivity {
         this.setContentView(R.layout.activity_main);
         this.initButtons();
         this.getConfig();
-        IngredientManager mgr = new IngredientManager();
-        mgr.open();
-        mgr.dbCreate(new Ingredient("jojo"));
     }
 
     public boolean initButtons() {

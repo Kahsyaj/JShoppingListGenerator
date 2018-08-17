@@ -50,5 +50,6 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS Meal;");
         db.execSQL("DROP TABLE IF EXISTS Recipe;");
         db.execSQL("DROP TABLE IF EXISTS Purchase;");
+        this.onCreate(db);
     }
 }
