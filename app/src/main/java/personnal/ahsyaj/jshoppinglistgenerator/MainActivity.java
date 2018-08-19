@@ -19,10 +19,10 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListGenerator;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActivityGetter {
     //Data
-    public static MainActivity activity;
     public static String[] CONF_FIELDS = {"user", "password", "database", "host", "port", "language"};
     public static String category;
 
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     //Constructor
     public MainActivity() {
         super();
-        MainActivity.activity = this;
+        ActivityGetter.activities.put("MainActivity", this);
     }
 
     //Getters
