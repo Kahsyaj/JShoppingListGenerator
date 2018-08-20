@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.MainActivity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
 public abstract class Manager {
     protected final static int VERSION = 1;
@@ -28,7 +29,7 @@ public abstract class Manager {
     }
 
     public Manager() {
-        this.handler = new DbHandler(MainActivity.activity, FILE_NAME, null, VERSION);
+        this.handler = new DbHandler(ActivityGetter.getActivity("MainActivity"), FILE_NAME, null, VERSION);
         this.open();
     }
 

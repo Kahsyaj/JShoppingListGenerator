@@ -9,16 +9,32 @@ import android.widget.TextView;
 
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
-public class ItemActivity extends AppCompatActivity {
+public class ItemActivity extends AppCompatActivity implements ActivityGetter {
+    private final String name = "ItemActivity";
     private Button saveButton = null;
     private Button backButton = null;
+
+    //Constructors
+    public ItemActivity() {
+        super();
+        ActivityGetter.putActivity(this.name, this);
+    }
+
+    //Destructor
+    public void finalize() {
+        ActivityGetter.removeActivity(this.name);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
         this.initButtons();
+        if (this.getIntent().getSerializableExtra("item") != null) {
+
+        }
     }
 
     public boolean initButtons() {
@@ -35,7 +51,10 @@ public class ItemActivity extends AppCompatActivity {
                     case "Ingredients":
                         String name = ((TextView) ItemActivity.this.findViewById(R.id.itemName)).getText().toString();
                         new IngredientManager().dbCreate(new Ingredient(name));
-                        CategoryActivity.activity.initView();
+                        CategoryActivity catAct = (CategoryActivity)ActivityGetter.getActivity("CategoryActivity");
+                        if (catAct != null) {
+                            catAct.initView();
+                        }
                         ItemActivity.this.finish();
                         break;
                     case "Meals":

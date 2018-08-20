@@ -21,16 +21,22 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
-public class CategoryActivity extends AppCompatActivity {
-    public static CategoryActivity activity;
-
+public class CategoryActivity extends AppCompatActivity implements ActivityGetter {
+    private final String name = "CategoryActivity";
     private Button backButton = null;
     private Button addButton = null;
 
+    //Constructors
     public CategoryActivity() {
         super();
-        CategoryActivity.activity = this;
+        ActivityGetter.putActivity(this.name, this);
+    }
+
+    //Destructor
+    public void finalize() {
+        ActivityGetter.removeActivity(this.name);
     }
 
     @Override

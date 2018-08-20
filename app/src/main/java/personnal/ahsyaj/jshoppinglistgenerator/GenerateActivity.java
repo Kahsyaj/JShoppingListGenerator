@@ -5,9 +5,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class GenerateActivity extends AppCompatActivity {
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
+
+public class GenerateActivity extends AppCompatActivity implements ActivityGetter {
+    private final String name = "GenerateActivity";
+
     private Button backButton = null;
     private Button reloadButton = null;
+
+    //Constructors
+    public GenerateActivity() {
+        super();
+        ActivityGetter.putActivity(this.name, this);
+    }
+
+    //Destructor
+    public void finalize() {
+        ActivityGetter.removeActivity(this.name);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

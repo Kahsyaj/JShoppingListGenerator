@@ -1,15 +1,13 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Adapters;
 
 import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -19,7 +17,6 @@ import personnal.ahsyaj.jshoppinglistgenerator.R;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Recipe;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
@@ -27,7 +24,7 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
-public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
+public class FieldsAdapter extends RecyclerView.Adapter<FieldsAdapter.ViewHolder> {
     private List<Entity> items;
     private int itemLayout;
 
@@ -48,7 +45,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     }
 
     //Constructors
-    public ItemsAdapter(List<Entity> items, int itemLayout) {
+    public FieldsAdapter(List<Entity> items, int itemLayout) {
         this.items = items;
         this.itemLayout = itemLayout;
     }
@@ -72,9 +69,14 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     }
 
     //Other methods
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FieldsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(this.itemLayout, parent, false);
-        return new ViewHolder(view);
+        return new FieldsAdapter.ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+
     }
 
     public int getItemCount() {

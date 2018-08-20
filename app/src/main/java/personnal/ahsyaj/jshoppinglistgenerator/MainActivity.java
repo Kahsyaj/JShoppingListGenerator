@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements ActivityGetter {
     //Data
     public static String[] CONF_FIELDS = {"user", "password", "database", "host", "port", "language"};
     public static String category;
+    private final String name = "MainActivity";
 
     //Buttons
     private Button ingredientsButton = null;
@@ -64,7 +65,12 @@ public class MainActivity extends AppCompatActivity implements ActivityGetter {
     //Constructor
     public MainActivity() {
         super();
-        ActivityGetter.activities.put("MainActivity", this);
+        ActivityGetter.putActivity(this.name, this);
+    }
+
+    //Destructor
+    public void finalize() {
+        ActivityGetter.removeActivity(this.name);
     }
 
     //Getters

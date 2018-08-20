@@ -9,11 +9,25 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class SetupActivity extends AppCompatActivity {
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
+
+public class SetupActivity extends AppCompatActivity implements ActivityGetter {
+    private final String name = "SetupActivity";
     private Button saveButton = null;
     private Button backButton = null;
 
     public static String[] CONF_FIELDS = {"user", "password", "database", "host", "port", "language"};
+
+    //Constructors
+    public SetupActivity() {
+        super();
+        ActivityGetter.putActivity(this.name, this);
+    }
+
+    //Destructor
+    public void finalize() {
+        ActivityGetter.removeActivity(this.name);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +47,7 @@ public class SetupActivity extends AppCompatActivity {
         this.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.activity);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ActivityGetter.getActivity("MainActivity"));
                 SharedPreferences.Editor prefsEditor = prefs.edit();
                 TextView userName = findViewById(R.id.userNameInput);
                 TextView password = findViewById(R.id.passwordInput);
