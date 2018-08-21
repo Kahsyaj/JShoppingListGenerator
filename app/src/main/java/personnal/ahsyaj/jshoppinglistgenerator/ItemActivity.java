@@ -1,18 +1,21 @@
 package personnal.ahsyaj.jshoppinglistgenerator;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import java.util.ArrayList;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
 public class ItemActivity extends AppCompatActivity implements ActivityGetter {
     private final String name = "ItemActivity";
+    private Entity target;
     private Button saveButton = null;
     private Button backButton = null;
 
@@ -32,9 +35,8 @@ public class ItemActivity extends AppCompatActivity implements ActivityGetter {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
         this.initButtons();
-        if (this.getIntent().getSerializableExtra("item") != null) {
 
-        }
+        this.target = (Entity) this.getIntent().getSerializableExtra("target");
     }
 
     public boolean initButtons() {
@@ -71,5 +73,28 @@ public class ItemActivity extends AppCompatActivity implements ActivityGetter {
             }
         });
         return true;
+    }
+
+    public void initView() {
+        ArrayList items = null;
+
+        switch(MainActivity.category) {
+            case "Meals":
+                Meal meal = (Meal) this.target;
+                items = meal.getRecipe().getIngredients();
+                break;
+            case "ShoppingLists":
+                ShoppingList shpLst = (ShoppingList) this.target;
+                //items = shpLst.getPurchase().
+                break;
+        }
+
+        /*RecyclerView itemLst = this.findViewById(R.id.itemList);
+        ItemsAdapter adapter = new ItemsAdapter(elements, R.layout.item_row);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager((this.getApplicationContext()));
+
+        itemLst.setLayoutManager(layoutManager);
+        itemLst.setItemAnimator(new DefaultItemAnimator());
+        itemLst.setAdapter(adapter);*/
     }
 }

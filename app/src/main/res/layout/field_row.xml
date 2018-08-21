@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <ImageButton
-        android:id="@+id/delButton2"
+        android:id="@+id/delButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"
@@ -49,7 +49,7 @@
         android:layout_marginTop="8dp"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/delButton2"
+        app:layout_constraintEnd_toStartOf="@+id/delButton"
         app:layout_constraintStart_toEndOf="@+id/itemName"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

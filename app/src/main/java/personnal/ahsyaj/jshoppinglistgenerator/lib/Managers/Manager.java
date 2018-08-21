@@ -6,11 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-
 import java.util.ArrayList;
-
-import personnal.ahsyaj.jshoppinglistgenerator.MainActivity;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
 public abstract class Manager {

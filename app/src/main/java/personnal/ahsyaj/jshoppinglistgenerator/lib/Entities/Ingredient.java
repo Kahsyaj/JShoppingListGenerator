@@ -3,9 +3,6 @@ package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class Ingredient extends Entity {
     public static String[] DB_FIELDS = {"id_ingredient", "name_ingredient", "deleted"};
     private String name;

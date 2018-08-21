@@ -1,13 +1,9 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.RecipeManager;
 
 public class Purchase extends Entity {
     public static String[] DB_FIELDS = {"id_shoppinglist", "id_meal", "deleted"};

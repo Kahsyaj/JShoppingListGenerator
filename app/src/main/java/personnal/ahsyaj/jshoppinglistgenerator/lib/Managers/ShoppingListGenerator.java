@@ -1,13 +1,10 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
 import android.content.Context;
-
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Purchase;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;

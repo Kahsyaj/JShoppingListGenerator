@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
 public class SetupActivity extends AppCompatActivity implements ActivityGetter {

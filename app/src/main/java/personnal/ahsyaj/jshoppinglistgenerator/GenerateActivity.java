@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 
 public class GenerateActivity extends AppCompatActivity implements ActivityGetter {

@@ -4,12 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-
 import java.util.ArrayList;
-
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 
 public class IngredientManager extends Manager {
     private String[] EDIT_FIELDS = {"name_ingredient"};

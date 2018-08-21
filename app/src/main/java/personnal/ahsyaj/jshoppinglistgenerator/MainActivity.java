@@ -3,21 +3,14 @@ package personnal.ahsyaj.jshoppinglistgenerator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.TextView;
-
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.DbFactory;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListGenerator;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
 

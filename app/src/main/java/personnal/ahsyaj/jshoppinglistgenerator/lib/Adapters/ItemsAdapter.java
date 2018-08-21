@@ -8,18 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
 import java.util.List;
-
 import personnal.ahsyaj.jshoppinglistgenerator.CategoryActivity;
 import personnal.ahsyaj.jshoppinglistgenerator.ItemActivity;
 import personnal.ahsyaj.jshoppinglistgenerator.R;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Recipe;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
@@ -34,16 +29,16 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView itemId;
         public TextView itemName;
-        public ImageButton setButton;
         public ImageButton delButton;
+        public ConstraintLayout itemRow;
 
         public ViewHolder(View view) {
             super(view);
 
             this.itemId = view.findViewById(R.id.itemId);
             this.itemName = view.findViewById(R.id.itemName);
-            this.setButton = view.findViewById(R.id.setButton);
             this.delButton = view.findViewById(R.id.delButton);
+            this.itemRow = view.findViewById(R.id.itemRow);
         }
     }
 
@@ -96,12 +91,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
                 holder.itemName.setText(((ShoppingList) elt).getDate());
                 break;
         }
-        holder.setButton.setOnClickListener(new View.OnClickListener() {
+        holder.itemRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CategoryActivity catAct = (CategoryActivity) ActivityGetter.getActivity("CategoryActivity");
                 Intent intent = new Intent(catAct, ItemActivity.class);
-                intent.putExtra("item", elt);
+                intent.putExtra("target", elt);
                 catAct.startActivity(intent);
             }
         });

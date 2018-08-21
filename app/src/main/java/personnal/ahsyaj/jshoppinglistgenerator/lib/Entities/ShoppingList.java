@@ -3,9 +3,6 @@ package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.PurchaseManager;
 
 public class ShoppingList extends Entity {

@@ -1,7 +1,5 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
-import android.content.Intent;
-
 import java.io.Serializable;
 
 public abstract class Entity implements Serializable {
