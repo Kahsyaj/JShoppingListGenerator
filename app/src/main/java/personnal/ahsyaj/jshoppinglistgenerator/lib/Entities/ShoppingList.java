@@ -2,6 +2,9 @@ package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.support.v7.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.PurchaseManager;
 
@@ -85,5 +88,15 @@ public class ShoppingList extends Entity {
 
     public String className() {
         return "ShoppingList";
+    }
+
+    public ArrayList getList() {
+        Recipe tmpRecipe = new Recipe();
+        for (Meal meal : this.getPurchase().getMeals()) {
+            for (int i = 0; i < meal.getRecipe().size(); i++) {
+                tmpRecipe.addIngredient(meal.getRecipe().getIngredient(i), meal.getRecipe().getQuantity(i));
+            }
+        }
+        return tmpRecipe.getIngredients();
     }
 }

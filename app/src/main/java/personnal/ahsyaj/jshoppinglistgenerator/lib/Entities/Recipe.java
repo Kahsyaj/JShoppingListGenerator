@@ -49,6 +49,15 @@ public class Recipe extends Entity {
         return (Integer) this.ingredients.get(index).get(1);
     }
 
+    public Integer getQuantity(Ingredient ingredient) {
+        for (int i = 0; i < this.size(); i++) {
+            if (this.getIngredient(i).getName().equals(ingredient.getName())) {
+                return this.getQuantity(i);
+            }
+        }
+        return 0;
+    }
+
     public void setQuantity(int index, Integer qty) {
         this.ingredients.get(index).set(1, qty);
     }
@@ -72,7 +81,7 @@ public class Recipe extends Entity {
 
     public void addIngredient(Ingredient ing, Integer qty) {
         if (this.inRecipe(ing)) {
-            this.setQuantity(ing, qty);
+            this.setQuantity(ing, this.getQuantity(ing) + qty);
         } else {
             ArrayList ingredient = new ArrayList();
             ingredient.add(ing);
