@@ -1,15 +1,15 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 
-public class Recipe extends Entity {
-    public static String[] DB_FIELDS = {"id_meal", "id_ingredient", "quantity", "deleted"};
+public final class Recipe extends Entity {
+    private static final String[] DB_FIELDS = {"id_meal", "id_ingredient", "quantity", "deleted"};
     private ArrayList<ArrayList> ingredients = new ArrayList<>();
-
 
     //Constructors
     public Recipe() {
@@ -23,6 +23,7 @@ public class Recipe extends Entity {
 
     public Recipe(int id, ArrayList<ArrayList> ingredients) {
         super(id);
+
         this.ingredients = ingredients;
     }
 
@@ -55,6 +56,7 @@ public class Recipe extends Entity {
                 return this.getQuantity(i);
             }
         }
+
         return 0;
     }
 
@@ -76,17 +78,39 @@ public class Recipe extends Entity {
                 return true;
             }
         }
+
         return false;
     }
 
     public void addIngredient(Ingredient ing, Integer qty) {
         if (this.inRecipe(ing)) {
             this.setQuantity(ing, this.getQuantity(ing) + qty);
-        } else {
-            ArrayList ingredient = new ArrayList();
-            ingredient.add(ing);
-            ingredient.add(qty);
-            this.ingredients.add(ingredient);
+        }
+
+        this.appendIngredient(ing, qty);
+    }
+
+    public void appendIngredient(Ingredient ing, Integer qty) {
+        if (this.inRecipe(ing)) {
+            return;
+        }
+
+        ArrayList ingredient = new ArrayList();
+
+        ingredient.add(ing);
+        ingredient.add(qty);
+        this.ingredients.add(ingredient);
+    }
+
+    public void removeIngredient(Ingredient ing) {
+        if (this.inRecipe(ing)) {
+            for (ArrayList pair : this.ingredients) {
+                if (pair.get(0) == ing) {
+                    this.ingredients.remove(pair);
+
+                    return;
+                }
+            }
         }
     }
 
@@ -102,27 +126,36 @@ public class Recipe extends Entity {
             repr.append(this.getIngredient(i).toString()).append(" - ");
             repr.append(String.format("[quantity] : %s\n", this.getQuantity(i).toString()));
         }
+
         return repr.toString();
     }
 
-    public void init(Cursor rslt, boolean close) {
+    public String className() {
+        return "Recipe";
+    }
+
+    private void init(Cursor rslt, boolean close) throws CursorIndexOutOfBoundsException {
         try {
             IngredientManager ing_mgr = new IngredientManager();
 
             this.setId(rslt.getInt(0));
             this.setDeleted(rslt.getInt(3));
+
             do {
-                this.addIngredient(ing_mgr.dbLoad(rslt.getInt(1)), rslt.getInt(2));
+                if (rslt.getInt(0) != this.getId()) {
+                    break;
+                }
+
+                this.appendIngredient(ing_mgr.dbLoad(rslt.getInt(1)), rslt.getInt(2));
             } while (rslt.moveToNext());
+
             if (close) {
                 rslt.close();
             }
+
+            this.toString();
         } catch (SQLiteException e) {
             System.err.println("An error occurred with the recipe init.\n" + e.getMessage());
         }
-    }
-
-    public String className() {
-        return "Recipe";
     }
 }

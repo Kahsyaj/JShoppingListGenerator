@@ -3,14 +3,16 @@ package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
 
-public class IngredientManager extends Manager {
-    private String[] EDIT_FIELDS = {"name_ingredient"};
-    private String[] UNEDIT_FIELDS = {"id_ingredient", "deleted"};
+public final class IngredientManager extends Manager {
+    private static final String[] EDIT_FIELDS = {"name_ingredient"};
+    private static final String[] UNEDIT_FIELDS = {"id_ingredient", "deleted"};
 
     //Constructors
     public IngredientManager(Context context) {
@@ -32,12 +34,19 @@ public class IngredientManager extends Manager {
 
             data.put(UNEDIT_FIELDS[0], currentId);
             data.put(EDIT_FIELDS[0], ingredient.getName());
-            System.out.println(data);
-            this.database.insert(this.table, null, data);
+            this.database.insertOrThrow(this.table, null, data);
             ingredient.setId(currentId);
+
+            return true;
+        } catch (SQLiteConstraintException e) {
+            System.err.println(String.format("The %s already exists, it has been restored.\n", this.getTable()) + e.getMessage());
+            this.restoreSoftDeleted(((Ingredient) elt).getName());
+            elt.setId(this.getId(((Ingredient) elt).getName()));
+            
             return true;
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -54,9 +63,12 @@ public class IngredientManager extends Manager {
             String[] whereArgs = {String.valueOf(ingredient.getId())};
 
             data.put(EDIT_FIELDS[0], ingredient.getName());
+            data.put(UNEDIT_FIELDS[1], 0);
+
             return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s updating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -72,9 +84,11 @@ public class IngredientManager extends Manager {
                     this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
 
             rslt.moveToNext();
+
             return new Ingredient(rslt, true);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
+
             return null;
         }
     }
@@ -86,9 +100,11 @@ public class IngredientManager extends Manager {
                     this.getTable(), EDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
 
             rslt.moveToNext();
+
             return new Ingredient(rslt, true);
-        } catch (SQLiteException e) {
+        } catch (CursorIndexOutOfBoundsException e) {
             System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
+
             return null;
         }
     }
@@ -103,9 +119,11 @@ public class IngredientManager extends Manager {
                 ingLst.add(new Ingredient(rslt, false));
             }
             rslt.close();
+
             return ingLst;
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
+
             return null;
         }
     }
@@ -117,9 +135,11 @@ public class IngredientManager extends Manager {
             String[] whereArgs = {String.valueOf(id)};
 
             data.put(UNEDIT_FIELDS[1], 1);
+
             return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -133,6 +153,7 @@ public class IngredientManager extends Manager {
             return this.dbSoftDelete(element.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -149,6 +170,7 @@ public class IngredientManager extends Manager {
             return (this.database.delete(this.table, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -162,6 +184,7 @@ public class IngredientManager extends Manager {
             return this.dbHardDelete(element.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -177,9 +200,27 @@ public class IngredientManager extends Manager {
             String[] whereArgs = {"1", String.valueOf(id)};
 
             data.put(UNEDIT_FIELDS[1], 0);
+
             return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
+
+            return false;
+        }
+    }
+
+    public boolean restoreSoftDeleted(String name) {
+        try {
+            ContentValues data = new ContentValues();
+            String whereClause = String.format("deleted = ? AND %s = ?", EDIT_FIELDS[0]);
+            String[] whereArgs = {"1", name};
+
+            data.put(UNEDIT_FIELDS[1], 0);
+
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -197,9 +238,11 @@ public class IngredientManager extends Manager {
             }
             int currentId = rslt.getInt(0) + 1;
             rslt.close();
+
             return currentId;
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s id querying.\n", this.getTable()) + e.getMessage());
+
             return 0;
         }
     }
@@ -220,8 +263,51 @@ public class IngredientManager extends Manager {
             }
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
+
             return null;
         }
+    }
+
+    public int getId(String name) {
+        try {
+            int id;
+
+            String[] selectArgs = {name};
+            Cursor rslt = this.database.rawQuery(String.format("SELECT %s FROM %s WHERE %s = ? AND %s = 0",
+                    UNEDIT_FIELDS[0], this.table, EDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
+
+            rslt.moveToNext();
+
+            id = rslt.getInt(0);
+
+            rslt.close();
+
+            return id;
+
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the %s id querying.\n", this.getTable()) + e.getMessage());
+
+            return -1;
+        }
+    }
+
+    public void createOrRestore(Entity elt) {
+        try {
+            this.fullDbCreate(elt);
+        } catch (SQLiteException e) {
+            this.restoreSoftDeleted(((Ingredient) elt).getName());
+        }
+    }
+
+    public boolean isDeleted(Entity entity) {
+        String[] selectionArgs = {((Ingredient)entity).getName()};
+        String query = String.format("SELECT deleted FROM %s WHERE %s = ?", this.getTable(), EDIT_FIELDS[0]);
+        Cursor cursor = this.database.rawQuery(query, selectionArgs);
+        boolean deleted = cursor.moveToNext();
+
+        cursor.close();
+
+        return deleted;
     }
 
     public String className() {

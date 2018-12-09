@@ -8,52 +8,38 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ActivityGetter;
 
-public class SetupActivity extends AppCompatActivity implements ActivityGetter {
-    private final String name = "SetupActivity";
-    private Button saveButton = null;
-    private Button backButton = null;
-
-    public static String[] CONF_FIELDS = {"user", "password", "database", "host", "port", "language"};
-
-    //Constructors
-    public SetupActivity() {
-        super();
-        ActivityGetter.putActivity(this.name, this);
-    }
-
-    //Destructor
-    public void finalize() {
-        ActivityGetter.removeActivity(this.name);
-    }
+public final class SetupActivity extends AppCompatActivity implements ActivityGetter {
+    private static final String NAME = "SetupActivity";
+    public static final String[] CONF_FIELDS = {"user", "password", "database", "host", "port", "language"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setup);
-        this.initButtons();
+        ActivityGetter.putActivity(NAME, this);
+        this.setContentView(R.layout.activity_setup);
+        this.init();
     }
 
-    public boolean initButtons() {
-        this.saveButton = this.findViewById(R.id.setupSaveButton);
-        this.backButton = this.findViewById(R.id.setupBackButton);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityGetter.removeActivity(NAME);
+    }
 
-        if (this.saveButton == null || this.backButton == null) {
-            return false;
-        }
-
-        this.saveButton.setOnClickListener(new View.OnClickListener() {
+    private void init() {
+        this.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ActivityGetter.getActivity("MainActivity"));
                 SharedPreferences.Editor prefsEditor = prefs.edit();
-                TextView userName = findViewById(R.id.userNameInput);
-                TextView password = findViewById(R.id.passwordInput);
-                TextView database = findViewById(R.id.databaseInput);
-                TextView host = findViewById(R.id.hostInput);
-                TextView port = findViewById(R.id.portInput);
-                Spinner language = findViewById(R.id.languageInput);
+                TextView userName = SetupActivity.this.findViewById(R.id.userNameInput);
+                TextView password = SetupActivity.this.findViewById(R.id.passwordInput);
+                TextView database = SetupActivity.this.findViewById(R.id.databaseInput);
+                TextView host = SetupActivity.this.findViewById(R.id.hostInput);
+                TextView port = SetupActivity.this.findViewById(R.id.portInput);
+                Spinner language = SetupActivity.this.findViewById(R.id.languageInput);
 
                 prefsEditor.putString(CONF_FIELDS[0], userName.getText().toString());
                 prefsEditor.putString(CONF_FIELDS[1], password.getText().toString());
@@ -65,12 +51,12 @@ public class SetupActivity extends AppCompatActivity implements ActivityGetter {
                 SetupActivity.this.finish();
             }
         });
-        this.backButton.setOnClickListener(new View.OnClickListener() {
+
+        this.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SetupActivity.this.finish();
             }
         });
-        return true;
     }
 }

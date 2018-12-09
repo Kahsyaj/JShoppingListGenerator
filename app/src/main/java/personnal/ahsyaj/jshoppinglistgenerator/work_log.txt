@@ -1,0 +1,8 @@
+BUG : - Suppression d'un champ ingredient vide => java.lang.NullPointerException -DONE-
+      - Supression d'un ing d'un meal puis rajout de cet ing via meal puis affichage du meal => java.lang
+      .NullPointerException -DONE-
+
+
+TODO :  - Create shoppinglist adapter -> IN PROGRESS.
+        - Do generate activity methods (init, db saving...).
+        - Do shoppinglist case for category activity / item.

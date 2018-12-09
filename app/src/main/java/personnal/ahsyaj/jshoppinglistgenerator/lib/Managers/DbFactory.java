@@ -4,20 +4,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DbFactory {
+public final class DbFactory {
     private String userName;
     private String password;
     private String database;
     private String url;
 
     //Constructors
-    /*public DbFactory() {
-        this.userName = "root";
-        this.password = "root";
-        this.database = "ShoppingListGenerator";
-        this.url = "jdbc:mysql://localhost:8889/" + this.database + "?serverTimezone=UTC";
-    }*/
-
     public DbFactory() {
         this.userName = "toor";
         this.password = "toor";
@@ -73,6 +66,7 @@ public class DbFactory {
         } catch (SQLException e) {
             System.err.println("An error occurred while getting the connector.");
             System.err.println(e.getMessage());
+
             return null;
         }
     }

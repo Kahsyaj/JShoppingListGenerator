@@ -7,97 +7,45 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
+
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ActivityGetter;
 
-public class MainActivity extends AppCompatActivity implements ActivityGetter {
+public final class MainActivity extends AppCompatActivity implements ActivityGetter, View.OnClickListener {
     //Data
     public static String[] CONF_FIELDS = {"user", "password", "database", "host", "port", "language"};
+    private static final String NAME = "MainActivity";
     public static String category;
-    private final String name = "MainActivity";
-
-    //Buttons
-    private Button ingredientsButton = null;
-    private Button mealsButton = null;
-    private Button shoppingListsButton = null;
-    private Button generateButton = null;
-    private ImageButton quitButton = null;
-    private ImageButton setupButton = null;
-
-    private class CustomButtonOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            switch(view.getId()) {
-                case R.id.quitButton:
-                    MainActivity.this.finish();
-                    break;
-                case R.id.setupButton:
-                    Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
-
-                    MainActivity.this.startActivity(setupIntent);
-                    break;
-                case R.id.generateButton:
-                    Intent generateIntent = new Intent(MainActivity.this, GenerateActivity.class);
-
-                    MainActivity.this.startActivity(generateIntent);
-                    break;
-                default:
-                    MainActivity.category = (String) ((Button) view).getText();
-                    Intent categoryIntent = new Intent(MainActivity.this, CategoryActivity.class);
-
-                    MainActivity.this.startActivity(categoryIntent);
-                    break;
-            }
-        }
-    }
-
-    //Constructor
-    public MainActivity() {
-        super();
-        ActivityGetter.putActivity(this.name, this);
-    }
-
-    //Destructor
-    public void finalize() {
-        ActivityGetter.removeActivity(this.name);
-    }
 
     //Getters
 
     //Other methods
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.activity_main);
-        this.initButtons();
-        this.getConfig();
-    }
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.quit_button:
+                MainActivity.this.finish();
+                break;
+            case R.id.setup_button:
+                Intent setupIntent = new Intent(MainActivity.this, SetupActivity.class);
 
-    public boolean initButtons() {
-        this.ingredientsButton = findViewById(R.id.ingredientsButton);
-        this.mealsButton = findViewById(R.id.mealsButton);
-        this.shoppingListsButton = findViewById(R.id.shoppinglistsbutton);
-        this.generateButton = findViewById(R.id.generateButton);
-        this.quitButton = findViewById(R.id.quitButton);
-        this.setupButton = findViewById(R.id.setupButton);
+                MainActivity.this.startActivity(setupIntent);
+                break;
+            case R.id.generate_button:
+                Intent generateIntent = new Intent(MainActivity.this, GenerateActivity.class);
 
-        if (this.ingredientsButton == null || this.mealsButton == null ||
-                this.shoppingListsButton == null || this.generateButton == null ||
-                this.quitButton == null || this.setupButton == null) {
-            return false;
+                MainActivity.this.startActivity(generateIntent);
+                break;
+            default:
+                MainActivity.category = (String) ((Button) view).getText();
+                Intent categoryIntent = new Intent(MainActivity.this, CategoryActivity.class);
+
+                MainActivity.this.startActivity(categoryIntent);
+                break;
         }
-
-        this.ingredientsButton.setOnClickListener(new CustomButtonOnClickListener());
-        this.mealsButton.setOnClickListener(new CustomButtonOnClickListener());
-        this.shoppingListsButton.setOnClickListener(new CustomButtonOnClickListener());
-        this.generateButton.setOnClickListener(new CustomButtonOnClickListener());
-        this.quitButton.setOnClickListener(new CustomButtonOnClickListener());
-        this.setupButton.setOnClickListener(new CustomButtonOnClickListener());
-        return true;
     }
 
     public void getConfig() {
@@ -118,5 +66,29 @@ public class MainActivity extends AppCompatActivity implements ActivityGetter {
                 break;
         }
         return mgr;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActivityGetter.putActivity(NAME, this);
+        this.setContentView(R.layout.activity_main);
+        this.init();
+        this.getConfig();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityGetter.removeActivity(NAME);
+    }
+
+    private void init() {
+        this.findViewById(R.id.ingredients_button).setOnClickListener(this);
+        this.findViewById(R.id.meals_button).setOnClickListener(this);
+        this.findViewById(R.id.shoppinglists_button).setOnClickListener(this);
+        this.findViewById(R.id.generate_button).setOnClickListener(this);
+        this.findViewById(R.id.quit_button).setOnClickListener(this);
+        this.findViewById(R.id.setup_button).setOnClickListener(this);
     }
 }

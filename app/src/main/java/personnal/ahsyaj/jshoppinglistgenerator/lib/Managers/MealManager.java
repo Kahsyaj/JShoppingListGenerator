@@ -3,14 +3,16 @@ package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
 
-public class MealManager extends Manager {
-    private String[] EDIT_FIELDS = {"name_meal"};
-    private String[] UNEDIT_FIELDS = {"id_meal", "deleted"};
+public final class MealManager extends Manager {
+    private static final String[] EDIT_FIELDS = {"name_meal"};
+    private static final String[] UNEDIT_FIELDS = {"id_meal", "deleted"};
 
     //Constructors
     public MealManager(Context context) {
@@ -33,9 +35,15 @@ public class MealManager extends Manager {
             data.put(UNEDIT_FIELDS[0], currentId);
             data.put(EDIT_FIELDS[0], meal.getName());
 
-            this.database.insert(this.table, null, data);
+            this.database.insertOrThrow(this.table, null, data);
 
             meal.setId(currentId);
+            meal.getRecipe().setId(currentId);
+
+            return true;
+        } catch (SQLiteConstraintException e) {
+            System.err.println(String.format("The %s already exists, it has been restored.\n", this.getTable()) + e.getMessage());
+            this.restoreSoftDeleted(elt.getId());
 
             return true;
         } catch (SQLiteException e) {
@@ -47,7 +55,7 @@ public class MealManager extends Manager {
 
     public boolean fullDbCreate(Entity elt) {
         try {
-            Meal meal = (Meal) elt;
+            Meal meal = (Meal) elt;;
             RecipeManager rcp_mgr = new RecipeManager();
 
             return (this.dbCreate(meal) && rcp_mgr.dbCreate(meal.getRecipe()));
@@ -66,6 +74,7 @@ public class MealManager extends Manager {
             String[] whereArgs = {String.valueOf(meal.getId())};
 
             data.put(EDIT_FIELDS[0], meal.getName());
+            data.put(UNEDIT_FIELDS[1], 0);
 
             return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
@@ -95,8 +104,8 @@ public class MealManager extends Manager {
                     this.getTable(), UNEDIT_FIELDS[0], UNEDIT_FIELDS[1]), selectArgs);
 
             rslt.moveToNext();
-            return new Meal(rslt, true);
 
+            return new Meal(rslt, true);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
             return null;
@@ -111,7 +120,7 @@ public class MealManager extends Manager {
 
             rslt.moveToNext();
             return new Meal(rslt, true);
-        } catch (SQLiteException e) {
+        } catch (CursorIndexOutOfBoundsException e) {
             System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
             return null;
         }
@@ -126,6 +135,7 @@ public class MealManager extends Manager {
                 mealLst.add(new Meal(rslt, false));
             }
             rslt.close();
+
             return mealLst;
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
@@ -140,9 +150,11 @@ public class MealManager extends Manager {
             String[] whereArgs = {String.valueOf(id)};
 
             data.put(UNEDIT_FIELDS[1], 1);
+
             return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -234,6 +246,20 @@ public class MealManager extends Manager {
         }
     }
 
+    public boolean restoreSoftDeleted(String name) {
+        try {
+            ContentValues data = new ContentValues();
+            String whereClause = String.format("deleted = ? AND %s = ?", EDIT_FIELDS[0]);
+            String[] whereArgs = {"1", name};
+
+            data.put(UNEDIT_FIELDS[1], 0);
+            return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
+        } catch (SQLiteException e) {
+            System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean fullRestoreSoftDeleted(int id) {
         try {
             RecipeManager rcp_mgr = new RecipeManager();
@@ -279,6 +305,25 @@ public class MealManager extends Manager {
             System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
             return null;
         }
+    }
+
+    public void createOrRestore(Entity elt) {
+        try {
+            this.fullDbCreate(elt);
+        } catch (SQLiteException e) {
+            this.restoreSoftDeleted(((Meal) elt).getName());
+        }
+    }
+
+    public boolean isDeleted(Entity entity) {
+        String[] selectionArgs = {((Meal)entity).getName()};
+        String query = String.format("SELECT deleted FROM %s WHERE %s = ?", this.getTable(), EDIT_FIELDS[0]);
+        Cursor cursor = this.database.rawQuery(query, selectionArgs);
+        boolean deleted = cursor.moveToNext();
+
+        cursor.close();
+
+        return deleted;
     }
 
     public String className() {

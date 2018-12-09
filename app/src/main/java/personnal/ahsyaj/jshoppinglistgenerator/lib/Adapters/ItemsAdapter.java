@@ -1,6 +1,7 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Adapters;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,28 +20,14 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.Manager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.PurchaseManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.RecipeManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ActivityGetter;
 
-public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
+public final class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
     private List<Entity> items;
     private int itemLayout;
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView itemId;
-        public TextView itemName;
-        public ImageButton delButton;
-        public ConstraintLayout itemRow;
-
-        public ViewHolder(View view) {
-            super(view);
-
-            this.itemId = view.findViewById(R.id.itemId);
-            this.itemName = view.findViewById(R.id.itemName);
-            this.delButton = view.findViewById(R.id.delButton);
-            this.itemRow = view.findViewById(R.id.itemRow);
-        }
-    }
 
     //Constructors
     public ItemsAdapter(List<Entity> items, int itemLayout) {
@@ -76,50 +63,92 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         return this.items.size();
     }
 
-    public void onBindViewHolder(ItemsAdapter.ViewHolder holder, int pos) {
-        Entity elt = this.items.get(pos);
+    public void onBindViewHolder(@NonNull ItemsAdapter.ViewHolder holder, int pos) {
+        holder.feedView(this.items.get(pos));
+    }
 
-        holder.itemId.setText(elt.getId().toString());
-        switch(elt.className()) {
-            case "Ingredient":
-                holder.itemName.setText(((Ingredient) elt).getName());
-                break;
-            case "Meal":
-                holder.itemName.setText(((Meal) elt).getName());
-                break;
-            case "ShoppingList":
-                holder.itemName.setText(((ShoppingList) elt).getDate());
-                break;
+    protected class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Entity elt;
+        private final TextView itemId;
+        private final TextView itemName;
+        private final ImageButton delButton;
+        private final ConstraintLayout itemRow;
+
+        private ViewHolder(View view) {
+            super(view);
+
+            this.itemId = view.findViewById(R.id.item_id);
+            this.itemName = view.findViewById(R.id.item_name);
+            this.delButton = view.findViewById(R.id.del_button);
+            this.itemRow = view.findViewById(R.id.content);
         }
-        holder.itemRow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CategoryActivity catAct = (CategoryActivity) ActivityGetter.getActivity("CategoryActivity");
-                Intent intent = new Intent(catAct, ItemActivity.class);
-                intent.putExtra("target", elt);
-                catAct.startActivity(intent);
-            }
-        });
-        holder.delButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == R.id.del_button) {
                 Manager mgr = null;
-                switch (elt.className()) {
+
+                switch (ViewHolder.this.elt.className()) {
                     case "Ingredient":
                         mgr = new IngredientManager();
+                        RecipeManager rMgr = new RecipeManager();
+
+                        rMgr.dbSoftDeleteIngredient(ViewHolder.this.elt.getId());
                         break;
                     case "Meal":
                         mgr = new MealManager();
+                        PurchaseManager pMgr = new PurchaseManager();
+                        RecipeManager rcpMgr = new RecipeManager();
+
+                        pMgr.dbSoftDeleteMeal(ViewHolder.this.elt.getId());
+                        rcpMgr.dbSoftDelete(ViewHolder.this.elt.getId());
                         break;
                     case "ShoppingList":
                         mgr = new ShoppingListManager();
+
                         break;
                     default:
                         return;
                 }
+
                 mgr.dbSoftDelete(elt.getId());
-                ((CategoryActivity) ActivityGetter.getActivity("CategoryActivity")).initView();
+                ((CategoryActivity) ActivityGetter.getActivity("CategoryActivity")).refreshView();
+            } else if (view.getId() == R.id.content) {
+                CategoryActivity catAct = (CategoryActivity) ActivityGetter.getActivity("CategoryActivity");
+                Intent intent = new Intent(catAct, ItemActivity.class);
+
+                intent.putExtra("target", ViewHolder.this.elt);
+                intent.putExtra("action", "Update");
+                catAct.startActivity(intent);
             }
-        });
+        }
+
+        private void feedView(Entity entity) {
+            this.elt = entity;
+
+            String name;
+
+            this.itemId.setText(entity.getId().toString());
+
+            switch(elt.className()) {
+                case "Ingredient":
+                    name = ((Ingredient) entity).getName();
+
+                    break;
+                case "Meal":
+                    name = ((Meal) entity).getName();
+
+                    break;
+                case "ShoppingList":
+                    name = ((ShoppingList) entity).getDate();
+
+                    break;
+                default:
+                    return;
+            }
+
+            this.itemName.setText(name);
+            this.delButton.setOnClickListener(this);
+            this.itemRow.setOnClickListener(this);
+        }
     }
 }

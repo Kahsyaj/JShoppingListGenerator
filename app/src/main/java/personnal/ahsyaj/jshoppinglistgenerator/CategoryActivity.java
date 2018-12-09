@@ -7,7 +7,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Adapters.ItemsAdapter;
@@ -15,80 +14,98 @@ import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ActivityGetter;
 
-public class CategoryActivity extends AppCompatActivity implements ActivityGetter {
-    private final String name = "CategoryActivity";
-    private Button backButton = null;
-    private Button addButton = null;
+public final class CategoryActivity extends AppCompatActivity implements ActivityGetter, View.OnClickListener {
+    private static final String NAME = "CategoryActivity";
 
-    //Constructors
-    public CategoryActivity() {
-        super();
-        ActivityGetter.putActivity(this.name, this);
+    private ItemsAdapter adapter;
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.back_button:
+                CategoryActivity.this.finish();
+
+                break;
+            case R.id.add_button:
+                Intent intent = new Intent(CategoryActivity.this, ItemActivity.class);
+
+                intent.putExtra("action", "Create");
+                this.startActivity(intent);
+
+                break;
+            default:
+                break;
+        }
     }
 
-    //Destructor
-    public void finalize() {
-        ActivityGetter.removeActivity(this.name);
+    public void refreshView() {
+        this.adapter.setItems(this.getItems());
+        this.adapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityGetter.putActivity(NAME, this);
         this.setContentView(R.layout.activity_category);
 
-        TextView subTitle = this.findViewById(R.id.subTitle);
+
+        this.init();
+        this.initEvents();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.refreshView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityGetter.removeActivity(NAME);
+    }
+
+    private void init() {
+        RecyclerView itemList = this.findViewById(R.id.item_list);
+        ArrayList<Entity> elements = this.getItems();
+        TextView subTitle = this.findViewById(R.id.subtitle);
 
         subTitle.setText(MainActivity.category);
-        this.initButtons();
-        this.initView();
+
+        this.adapter = new ItemsAdapter(elements, R.layout.item_row);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager((this.getApplicationContext()));
+
+        itemList.setLayoutManager(layoutManager);
+        itemList.setItemAnimator(new DefaultItemAnimator());
+        itemList.setAdapter(this.adapter);
     }
 
-    public boolean initButtons() {
-        this.backButton = this.findViewById(R.id.catBackButton);
-        this.addButton = this.findViewById(R.id.addButton);
-
-        if (this.backButton == null || this.addButton == null) {
-            return false;
-        }
-        this.backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CategoryActivity.this.finish();
-            }
-        });
-        this.addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(CategoryActivity.this, ItemActivity.class);
-                CategoryActivity.this.startActivity(intent);
-            }
-        });
-        return true;
-    }
-
-    public void initView() {
+    private ArrayList<Entity> getItems() {
         ArrayList<Entity> elements = null;
 
         switch(MainActivity.category) {
             case "Ingredients":
                 elements = new IngredientManager().dbLoadAll();
+
                 break;
             case "Meals":
                 elements = new MealManager().dbLoadAll();
+
                 break;
             case "ShoppingLists":
                 elements = new ShoppingListManager().dbLoadAll();
+
                 break;
         }
 
-        RecyclerView itemLst = this.findViewById(R.id.itemList);
-        ItemsAdapter adapter = new ItemsAdapter(elements, R.layout.item_row);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager((this.getApplicationContext()));
+        return elements;
+    }
 
-        itemLst.setLayoutManager(layoutManager);
-        itemLst.setItemAnimator(new DefaultItemAnimator());
-        itemLst.setAdapter(adapter);
+    private void initEvents() {
+        this.findViewById(R.id.back_button).setOnClickListener(this);
+        this.findViewById(R.id.add_button).setOnClickListener(this);
     }
 }

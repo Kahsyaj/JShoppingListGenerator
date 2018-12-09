@@ -27,9 +27,10 @@
         <item>English</item>
     </string-array>
 
-    <string name="category">CategoryName</string>
+    <string name="category">Category name</string>
     <string name="item_name">Item name</string>
     <string name="host">Host</string>
     <string name="port">Port</string>
     <string name="defaultPort">3306</string>
+    <string name="quantity">Quantity</string>
 </resources>

@@ -1,12 +1,13 @@
 package personnal.ahsyaj.jshoppinglistgenerator.lib.Entities;
 
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
 
-public class Purchase extends Entity {
-    public static String[] DB_FIELDS = {"id_shoppinglist", "id_meal", "deleted"};
+public final class Purchase extends Entity {
+    private static final String[] DB_FIELDS = {"id_shoppinglist", "id_meal", "deleted"};
     private ArrayList<Meal> meals = new ArrayList<>();
 
     //Constructors
@@ -61,25 +62,27 @@ public class Purchase extends Entity {
         return repr.toString();
     }
 
-    public void init(Cursor rslt, boolean close) {
+    public String className() {
+        return "Purchase";
+    }
+
+    private void init(Cursor rslt, boolean close) throws CursorIndexOutOfBoundsException {
         try {
             MealManager meal_mgr = new MealManager();
 
             this.setId(rslt.getInt(0));
             this.setDeleted(rslt.getInt(2));
+
             do {
                 this.addMeal((Meal)meal_mgr.dbLoad(rslt.getInt(1)));
             } while (rslt.moveToNext());
+
             if (close) {
                 rslt.close();
             }
         } catch (SQLiteException e) {
             System.err.println("An error occurred with the purchase init.\n" + e.getMessage());
         }
-    }
-
-    public String className() {
-        return "Purchase";
     }
 }
 

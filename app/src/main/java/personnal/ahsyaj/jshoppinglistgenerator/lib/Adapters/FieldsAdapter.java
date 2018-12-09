@@ -6,33 +6,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
+import java.util.ArrayList;
 import java.util.List;
 import personnal.ahsyaj.jshoppinglistgenerator.ItemActivity;
+import personnal.ahsyaj.jshoppinglistgenerator.MainActivity;
 import personnal.ahsyaj.jshoppinglistgenerator.R;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Ingredient;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.IngredientManager;
-import personnal.ahsyaj.jshoppinglistgenerator.lib.Models.ActivityGetter;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Meal;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.MealManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ShoppingListManager;
+import personnal.ahsyaj.jshoppinglistgenerator.lib.Managers.ActivityGetter;
 
-public class FieldsAdapter extends RecyclerView.Adapter<FieldsAdapter.ViewHolder> {
+public final class FieldsAdapter extends RecyclerView.Adapter<FieldsAdapter.ViewHolder> {
     private List<List> items;
     private int itemLayout;
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public EditText itemName;
-        public EditText quantity;
-        public ImageButton delButton;
-
-        public ViewHolder(View view) {
-            super(view);
-
-            this.itemName = view.findViewById(R.id.itemName);
-            this.quantity = view.findViewById(R.id.itemQuantity);
-            this.delButton = view.findViewById(R.id.delButton);
-        }
-    }
+    private Entity target;
 
     //Constructors
-    public FieldsAdapter(List<List> items, int itemLayout) {
+    public FieldsAdapter(Entity target, List<List> items, int itemLayout) {
+        this.target = target;
         this.items = items;
         this.itemLayout = itemLayout;
     }
@@ -58,24 +53,74 @@ public class FieldsAdapter extends RecyclerView.Adapter<FieldsAdapter.ViewHolder
     //Other methods
     public FieldsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(this.itemLayout, parent, false);
+
         return new FieldsAdapter.ViewHolder(view);
+    }
+
+    public void add(ArrayList element) {
+        this.items.add(element);
+        this.notifyItemInserted(this.getItemCount()-1);
     }
 
     @Override
     public void onBindViewHolder(FieldsAdapter.ViewHolder holder, int pos) {
-        holder.itemName.setText(((Ingredient) this.items.get(pos).get(0)).getName());
-        holder.quantity.setText(this.items.get(pos).get(1).toString());
-        holder.delButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                IngredientManager mgr = new IngredientManager();
-                mgr.dbSoftDelete(((Ingredient) FieldsAdapter.this.items.get(pos).get(0)).getId());
-                ItemActivity itemAct = (ItemActivity) ActivityGetter.getActivity("ItemActivity");
-                itemAct.initView();
-            }
-        });
+        holder.feedView(this.items.get(pos));
     }
+
     public int getItemCount() {
         return this.items.size();
+    }
+
+    protected final class ViewHolder extends RecyclerView.ViewHolder {
+        private final ViewGroup currentView;
+        private final EditText itemName;
+        private final EditText quantity;
+        private final ImageButton delButton;
+
+        private ViewHolder(View view) {
+            super(view);
+
+            this.currentView = (ViewGroup) view;
+            this.itemName = view.findViewById(R.id.item_name);
+            this.quantity = view.findViewById(R.id.item_quantity);
+            this.delButton = view.findViewById(R.id.del_button);
+        }
+
+        private void feedView(List item) {
+            Ingredient ing = ((Ingredient) item.get(0));
+
+            this.itemName.setText(ing.getName());
+            this.quantity.setText(item.get(1).toString());
+            this.delButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (FieldsAdapter.this.target != null) {
+                        if (!ing.getName().equals("")) {
+                            switch (MainActivity.category) {
+                                case "Meals":
+                                    MealManager mealMgr = new MealManager();
+
+                                    ((Meal) FieldsAdapter.this.target).getRecipe().removeIngredient(ing);
+                                    mealMgr.fullDbUpdate(FieldsAdapter.this.target);
+                                    break;
+                                case "ShoppingLists":
+                                    ShoppingListManager shpLstMgr = new ShoppingListManager();
+
+                                    ((ShoppingList) FieldsAdapter.this.target).getList().remove(item);
+                                    shpLstMgr.dbUpdate((FieldsAdapter.this.target));
+                                    break;
+                            }
+                        } else {
+                            FieldsAdapter.this.items.remove(item);
+                        }
+
+                        ItemActivity itemAct = (ItemActivity) ActivityGetter.getActivity("ItemActivity");
+                        itemAct.refreshView();
+                    } else {
+                        ViewHolder.this.currentView.removeView(ViewHolder.this.delButton);
+                    }
+                }
+            });
+        }
     }
 }

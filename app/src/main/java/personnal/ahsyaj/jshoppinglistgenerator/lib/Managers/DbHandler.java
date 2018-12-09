@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DbHandler extends SQLiteOpenHelper {
+public final class DbHandler extends SQLiteOpenHelper {
 
     //Constuctors
     public DbHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -23,7 +23,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 "name_meal TEXT(50) UNIQUE, deleted INTEGER(1) DEFAULT 0);");
 
         //Recipes table
-        db.execSQL("CREATE TABLE IF NOT EXISTS Recipe (id_ingredient INTEGER NOT NULL, id_meal " +
+        db.execSQL("CREATE TABLE IF NOT EXISTS Recipe (id_meal INTEGER NOT NULL, id_ingredient " +
                 "INTEGER NOT NULL, quantity INTEGER, deleted INTEGER(1) DEFAULT 0, CONSTRAINT Recipte_PK " +
                 "PRIMARY KEY (id_meal, id_ingredient), CONSTRAINT Recipe_Meal_FK FOREIGN KEY(id_meal) " +
                 "REFERENCES Meal(id_meal), CONSTRAINT Recipe_Ingredient_FK FOREIGN KEY (id_ingredient) " +
@@ -34,7 +34,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 "AUTOINCREMENT, date_shoppinglist TEXT, deleted INTEGER(1) DEFAULT 0);");
 
         //Purchases table
-        db.execSQL("CREATE TABLE IF NOT EXISTS Purchase ( id_shoppinglist INTEGER NOT NULL, " +
+        db.execSQL("CREATE TABLE IF NOT EXISTS Purchase (id_shoppinglist INTEGER NOT NULL, " +
                 "id_meal INTEGER NOT NULL, deleted INTEGER(1) DEFAULT 0, " +
                 "CONSTRAINT Purchase_PK PRIMARY KEY (id_shoppinglist, id_meal), CONSTRAINT " +
                 "Purchase_Meal_FK FOREIGN KEY (id_meal) REFERENCES Meal(id_meal), " +

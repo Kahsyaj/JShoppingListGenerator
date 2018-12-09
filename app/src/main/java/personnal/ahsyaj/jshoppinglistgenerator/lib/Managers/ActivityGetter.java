@@ -1,4 +1,4 @@
-package personnal.ahsyaj.jshoppinglistgenerator.lib.Models;
+package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 
 import android.app.Activity;
 

@@ -3,14 +3,16 @@ package personnal.ahsyaj.jshoppinglistgenerator.lib.Managers;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteException;
 import java.util.ArrayList;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.Entity;
 import personnal.ahsyaj.jshoppinglistgenerator.lib.Entities.ShoppingList;
 
-public class ShoppingListManager extends Manager {
-    private String[] EDIT_FIELDS = {"date_shoppinglist"};
-    private String[] UNEDIT_FIELDS = {"id_shoppinglist", "deleted"};
+public final class ShoppingListManager extends Manager {
+    private static final String[] EDIT_FIELDS = {"date_shoppinglist"};
+    private static final String[] UNEDIT_FIELDS = {"id_shoppinglist", "deleted"};
 
     //Constructors
     public ShoppingListManager(Context context) {
@@ -32,11 +34,18 @@ public class ShoppingListManager extends Manager {
 
             data.put(UNEDIT_FIELDS[0], currentId);
             data.put(EDIT_FIELDS[0], shoppinglist.getDate());
-            this.database.insert(this.table, null, data);
+            this.database.insertOrThrow(this.table, null, data);
             shoppinglist.setId(currentId);
+
+            return true;
+        } catch (SQLiteConstraintException e) {
+            System.err.println(String.format("The %s already exists, it has been restored.\n", this.getTable()) + e.getMessage());
+            this.restoreSoftDeleted(elt.getId());
+
             return true;
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -50,6 +59,7 @@ public class ShoppingListManager extends Manager {
             return (success && p_mgr.fullDbCreate(shoppinglist.getPurchase()));
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s full creating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -62,9 +72,12 @@ public class ShoppingListManager extends Manager {
             String[] whereArgs = {String.valueOf(shoppinglist.getId())};
 
             data.put(EDIT_FIELDS[0], shoppinglist.getDate());
+            data.put(UNEDIT_FIELDS[1], 0);
+
             return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s updating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -78,6 +91,7 @@ public class ShoppingListManager extends Manager {
             return (success && this.dbUpdate(shoppinglist));
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s full updating.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -90,9 +104,11 @@ public class ShoppingListManager extends Manager {
             PurchaseManager p_mgr = new PurchaseManager();
 
             rslt.moveToNext();
+
             return new ShoppingList(rslt, true);
-        } catch (SQLiteException e) {
+        } catch (CursorIndexOutOfBoundsException e) {
             System.err.println(String.format("An error occurred with the %s loading.\n", this.getTable()) + e.getMessage());
+
             return null;
         }
     }
@@ -107,9 +123,11 @@ public class ShoppingListManager extends Manager {
                 shpgLst.add(new ShoppingList(rslt, false));
             }
             rslt.close();
+
             return shpgLst;
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the whole %s loading.\n", this.getTable()) + e.getMessage());
+
             return null;
         }
     }
@@ -121,9 +139,11 @@ public class ShoppingListManager extends Manager {
             String[] whereArgs = {String.valueOf(id)};
 
             data.put(UNEDIT_FIELDS[1], 1);
+
             return (this.database.update(this.table, data, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -136,6 +156,7 @@ public class ShoppingListManager extends Manager {
             return (success && p_mgr.fullDbSoftDelete(id));
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -145,6 +166,7 @@ public class ShoppingListManager extends Manager {
             return this.dbSoftDelete(element.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -154,6 +176,7 @@ public class ShoppingListManager extends Manager {
             return this.fullDbSoftDelete(elt.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the full %s soft deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -166,6 +189,7 @@ public class ShoppingListManager extends Manager {
             return (this.database.delete(this.table, whereClause, whereArgs) != 0);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -178,6 +202,7 @@ public class ShoppingListManager extends Manager {
             return (success && this.dbHardDelete(id));
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -187,6 +212,7 @@ public class ShoppingListManager extends Manager {
             return this.dbHardDelete(element.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -196,6 +222,7 @@ public class ShoppingListManager extends Manager {
             return this.fullDbHardDelete(elt.getId());
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the full %s hard deletion.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -207,9 +234,11 @@ public class ShoppingListManager extends Manager {
             String[] whereArgs = {"1", String.valueOf(id)};
 
             data.put(UNEDIT_FIELDS[1], 0);
+
             return (this.database.update(this.table, data, whereClause, whereArgs) != 1);
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the soft deleted %s restoring.\n", this.getTable()) + e.getMessage());
+
             return false;
         }
     }
@@ -236,9 +265,11 @@ public class ShoppingListManager extends Manager {
             }
             int currentId = rslt.getInt(0) + 1;
             rslt.close();
+
             return currentId;
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s id querying.\n", this.getTable()) + e.getMessage());
+
             return 0;
         }
     }
@@ -259,8 +290,28 @@ public class ShoppingListManager extends Manager {
             }
         } catch (SQLiteException e) {
             System.err.println(String.format("An error occurred with the %s ids querying.\n", this.getTable()) + e.getMessage());
+
             return null;
         }
+    }
+
+    public void createOrRestore(Entity elt) {
+        try {
+            this.fullDbCreate(elt);
+        } catch (SQLiteException e) {
+            this.restoreSoftDeleted(elt.getId());
+        }
+    }
+
+    public boolean isDeleted(Entity entity) {
+        String[] selectionArgs = {String.valueOf(entity.getId())};
+        String query = String.format("SELECT deleted FROM %s WHERE %s = ?", this.getTable(), UNEDIT_FIELDS[0]);
+        Cursor cursor = this.database.rawQuery(query, selectionArgs);
+        boolean deleted = cursor.moveToNext();
+
+        cursor.close();
+
+        return deleted;
     }
 
     public String className() {

@@ -2,83 +2,79 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activityMain"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
     <ImageButton
-        android:id="@+id/quitButton"
+        android:id="@+id/quit_button"
         style="@style/smallImageButton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
     <Button
-        android:id="@+id/shoppinglistsbutton"
+        android:id="@+id/shoppinglists_button"
         style="@style/homeButton"
-        android:layout_marginBottom="14dp"
+        android:layout_marginTop="16dp"
         android:text="@string/shoppinglists"
-        app:layout_constraintBottom_toTopOf="@+id/generateButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/meals_button" />
 
     <Button
-        android:id="@+id/mealsButton"
+        android:id="@+id/meals_button"
         style="@style/homeButton"
-        android:layout_marginBottom="14dp"
+        android:layout_marginTop="16dp"
         android:text="@string/meals"
-        app:layout_constraintBottom_toTopOf="@+id/shoppinglistsbutton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ingredients_button" />
 
     <Button
-        android:id="@+id/generateButton"
+        android:id="@+id/generate_button"
         style="@style/homeButton"
-        android:layout_marginBottom="76dp"
+        android:layout_marginTop="16dp"
         android:text="@string/generate"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shoppinglists_button" />
 
     <TextView
-        android:id="@+id/mainTitle"
+        android:id="@+id/main_title"
         style="@style/mainTitle"
+        android:layout_marginTop="16dp"
         android:text="@string/shoppinglistgenerator"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.004" />
+        app:layout_constraintTop_toBottomOf="@+id/setup_button" />
 
     <Button
-        android:id="@+id/ingredientsButton"
+        android:id="@+id/ingredients_button"
         style="@style/homeButton"
-        android:layout_marginBottom="14dp"
+        android:layout_marginTop="32dp"
         android:text="@string/ingredients"
-        app:layout_constraintBottom_toTopOf="@+id/mealsButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/intro_text" />
 
     <TextView
-        android:id="@+id/introText"
+        android:id="@+id/intro_text"
         style="@style/introText"
+        android:layout_height="wrap_content"
         android:text="@string/which_category_would_you_like_to_browse"
-        app:layout_constraintBottom_toTopOf="@+id/ingredientsButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainTitle"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/main_title" />
 
     <ImageButton
-        android:id="@+id/setupButton"
+        android:id="@+id/setup_button"
         style="@style/smallImageButton"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_preferences" />
 
 </android.support.constraint.ConstraintLayout>
